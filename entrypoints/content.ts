@@ -1,4 +1,5 @@
 import { browser } from 'wxt/browser';
+import { defineContentScript } from 'wxt/utils/define-content-script';
 import { PRODUCT_SLUG, STORAGE_KEY, normalizeSettings, normalizeState, type ProfileSettings } from '../shared/model';
 import { LICENSE_KEY } from '../shared/license';
 

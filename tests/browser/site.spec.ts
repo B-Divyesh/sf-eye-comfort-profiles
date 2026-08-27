@@ -23,3 +23,12 @@ test('home preview responds and the layout does not overflow', async ({ page }) 
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
 });
+
+test('supporter CTA uses the live Sociobot checkout mapping', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#checkout-link')).toHaveAttribute(
+    'href',
+    'https://api.sociobot.in/api/v1/products/eye-comfort-profiles/checkout'
+  );
+  await expect(page.getByText('$19', { exact: true })).toBeVisible();
+});

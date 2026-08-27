@@ -2,7 +2,8 @@ import { PRODUCT_SLUG } from './model';
 
 export const LICENSE_KEY = `sb_license:${PRODUCT_SLUG}`;
 const VERDICT_KEY = `${LICENSE_KEY}:verdict`;
-const BILLING_BASE = 'https://pilot-api.sociobot.in/api/v1';
+/** Production mapping for the live, one-time $19 supporter unlock. */
+export const BILLING_BASE = 'https://api.sociobot.in/api/v1';
 const DAY = 86_400_000;
 
 export interface LicenseVerdict {

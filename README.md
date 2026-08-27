@@ -20,7 +20,7 @@ Live site: <https://eye-comfort-profiles.sociobot.in>
   reader chooses a profile
 - Local JSON backup and restore
 - Restricted-page, empty, storage-error, and offline-license states
-- Optional $12 one-time supporter purchase for decorative faceplates; every
+- Optional $19 one-time supporter purchase for decorative faceplates; every
   reading and backup feature remains free
 - Static product site, privacy policy, and terms
 
@@ -66,8 +66,7 @@ and a restricted browser page.
 
 The build uses no third-party runtime scripts, web fonts, analytics, or paid
 service other than the optional Sociobot-hosted checkout and license verify
-request. Staging builds use `pilot-api.sociobot.in`; the factory switches this
-base at release.
+request. Production builds use `api.sociobot.in`.
 
 ## Privacy and permissions
 

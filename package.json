@@ -12,7 +12,9 @@
     "build:site": "vite build --config vite.site.config.ts",
     "package:extension": "wxt zip && node scripts/stage-extension.mjs",
     "build": "npm run clean && npm run build:extension && npm run build:site && npm run package:extension",
-    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run tests/model.test.ts tests/release-config.test.ts",
+    "test:release": "npm run build && vitest run tests/release-artifact.test.ts",
     "test:watch": "vitest",
     "test:a11y": "playwright test"
   },
