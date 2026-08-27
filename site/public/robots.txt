@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://eye-comfort-profiles.sociobot.in/sitemap.xml

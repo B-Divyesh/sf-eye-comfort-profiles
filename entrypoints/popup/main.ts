@@ -28,6 +28,18 @@ let activeTabId: number | undefined;
 let host = '';
 let selectedId = '';
 
+function unlockSupporter(): void {
+  const faceplate = localStorage.getItem('ecp_faceplate') ?? 'brass';
+  document.body.dataset.faceplate = faceplate;
+  byId<HTMLElement>('faceplate-options').hidden = false;
+  byId<HTMLSelectElement>('faceplate').value = faceplate;
+}
+
+function lockSupporter(): void {
+  delete document.body.dataset.faceplate;
+  byId<HTMLElement>('faceplate-options').hidden = true;
+}
+
 function showNotice(message: string, kind: 'success' | 'error' | 'warning' = 'success'): void {
   notice.textContent = message;
   notice.dataset.kind = kind;
@@ -119,14 +131,17 @@ async function initLicense(): Promise<void> {
     await browser.storage.local.remove(LICENSE_KEY);
   }
   const cached = cachedVerdict();
-  if (cached?.valid) document.body.dataset.faceplate = 'supporter';
+  if (cached?.valid) unlockSupporter();
   if (cached && !cached.valid) output.textContent = 'License no longer active.';
   try {
     const verdict = await verifyLicense();
     if (verdict?.valid) {
-      document.body.dataset.faceplate = 'supporter';
+      unlockSupporter();
       output.textContent = 'Supporter faceplates unlocked. Thank you.';
-    } else if (verdict) output.textContent = 'License no longer active. You can purchase a new unlock above.';
+    } else if (verdict) {
+      lockSupporter();
+      output.textContent = 'License no longer active. You can purchase a new unlock above.';
+    }
   } catch {
     output.textContent = cached?.valid ? 'Offline — using your last verified unlock.' : 'License check unavailable. Reading tools still work.';
   }
@@ -246,11 +261,20 @@ byId<HTMLButtonElement>('restore').addEventListener('click', async () => {
   try {
     const verdict = await verifyLicense(true);
     if (verdict?.valid) {
-      document.body.dataset.faceplate = 'supporter';
+      unlockSupporter();
       output.textContent = 'Supporter faceplates unlocked. Thank you.';
       input.value = '';
-    } else output.textContent = 'That license is not active. Check the token and try again.';
+    } else {
+      lockSupporter();
+      output.textContent = 'That license is not active. Check the token and try again.';
+    }
   } catch { output.textContent = 'Could not check the license. Try again when you are online.'; }
+});
+
+byId<HTMLSelectElement>('faceplate').addEventListener('change', (event) => {
+  const value = (event.currentTarget as HTMLSelectElement).value;
+  localStorage.setItem('ecp_faceplate', value);
+  document.body.dataset.faceplate = value;
 });
 
 void init().catch(() => {

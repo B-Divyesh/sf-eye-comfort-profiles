@@ -61,7 +61,7 @@ addition to color. Reading-preview themes use their own checked contrast pairs.
 - A two-lamp header reports site support and whether a profile is applied.
 - Changes preview immediately; persistence is explicit through “Save to this
   site”. No silent assignment.
-- Profile deletion names the target and offers a short undo window.
+- Profile deletion names the target and requires a specific confirmation.
 - Empty, restricted-page, storage-error, and offline-license states always
   explain the next useful action.
 

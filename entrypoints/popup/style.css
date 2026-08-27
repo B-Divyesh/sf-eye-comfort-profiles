@@ -106,8 +106,13 @@ dialog::backdrop { background: #17201f99; }
 dialog h2 { margin-top: 0; font-size: 19px; }
 .dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 18px; }
 .destructive { color: white; background: var(--danger); border-color: #6f211c; }
-body[data-faceplate="supporter"] .panel-head { background: #f3e3c7; }
-body[data-faceplate="supporter"] .brand-mark { box-shadow: inset 0 0 0 3px #d7aa54, inset 0 2px 0 white; }
+body[data-faceplate="brass"] .panel-head { background: #f3e3c7; }
+body[data-faceplate="brass"] .brand-mark { box-shadow: inset 0 0 0 3px #b88932, inset 0 2px 0 white; }
+body[data-faceplate="coral"] .panel-head { background: #efc7b7; }
+body[data-faceplate="coral"] .brand-mark { box-shadow: inset 0 0 0 3px #9b3d27, inset 0 2px 0 #fff8; }
+body[data-faceplate="petrol"] .panel-head { color: #f7f2e8; background: var(--petrol-dark); }
+body[data-faceplate="petrol"] .panel-head .eyebrow { color: #c7ded7; }
+body[data-faceplate="petrol"] .brand-mark { background: #d8cfbd; box-shadow: inset 0 0 0 3px #5d938c, inset 0 2px 0 white; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }

@@ -16,16 +16,19 @@ const themes: Record<ProfileSettings['theme'], string> = {
   original: '',
   paper: `
     html, body { background-color: #f3eddf !important; color: #242925 !important; }
+    :where(article, main, [role="main"]) { background-color: #f3eddf !important; }
     :where(article, main, [role="main"], p, li, blockquote, dd, dt, h1, h2, h3, h4) { color: #242925 !important; }
     :where(a) { color: #075d68 !important; }
   `,
   slate: `
     html, body { background-color: #1c2526 !important; color: #e8e3d7 !important; }
+    :where(article, main, [role="main"]) { background-color: #1c2526 !important; }
     :where(article, main, [role="main"], p, li, blockquote, dd, dt, h1, h2, h3, h4) { color: #e8e3d7 !important; }
     :where(a) { color: #8dd5d2 !important; }
   `,
   contrast: `
     html, body { background-color: #fff !important; color: #111 !important; }
+    :where(article, main, [role="main"]) { background-color: #fff !important; }
     :where(article, main, [role="main"], p, li, blockquote, dd, dt, h1, h2, h3, h4) { color: #111 !important; }
     :where(a) { color: #0046a8 !important; text-decoration-thickness: .12em !important; }
   `

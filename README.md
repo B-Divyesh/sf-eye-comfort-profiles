@@ -38,6 +38,8 @@ npm run dev          # WXT extension development
 npm run dev:site     # landing site on a local Vite server
 npm test
 npm run build
+npx playwright install chromium   # first browser-audit run only
+npm run test:a11y
 ```
 
 `npm run build` is the release command. It produces:

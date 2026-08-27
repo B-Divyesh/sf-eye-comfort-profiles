@@ -13,9 +13,12 @@
     "package:extension": "wxt zip && node scripts/stage-extension.mjs",
     "build": "npm run clean && npm run build:extension && npm run build:site && npm run package:extension",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:a11y": "playwright test"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.62.1",
     "@types/chrome": "^0.0.326",
     "typescript": "^5.8.3",
     "vite": "^7.1.3",
