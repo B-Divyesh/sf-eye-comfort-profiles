@@ -1,6 +1,6 @@
 # Eye Comfort Profiles — repair handoff
 
-**Status: repaired and ready for Standard static deployment.**
+**Status: repaired and deployed as a Standard static site.**
 
 This repair resolves every finding in the independent verifier report for
 candidate `1bef92bf2309c26ad5baac672c67b4b15b1ddc94`.
@@ -58,7 +58,23 @@ and the responsive WebP hero candidates are 18.2 kB and 37.8 kB.
 
 ## Deployment and post-deploy checks
 
-Deploy `dist/site` as a Standard Azure Static Web App. Confirm:
+`dist/site` was deployed to <https://eye-comfort-profiles.sociobot.in> from
+repair commit `cacfcfc` as a Standard Azure Static Web App. The live checks
+passed:
+
+- `GET /downloads/eye-comfort-profiles-chrome.zip` returns `200
+  application/zip`, 28,296 bytes, not HTML.
+- Its SHA-256 is
+  `3e8b747dbfbd2c73a7a67470bc285983de61d06d16220faba144c38dbe98081a`,
+  exactly matching the generated local ZIP; `unzip -t` passes.
+- The live hashed JavaScript response has
+  `Cache-Control: public, max-age=31536000, immutable`.
+- Live HTML has CSP, COOP, Permissions Policy, `X-Frame-Options: DENY`,
+  `X-Content-Type-Options: nosniff`, and the strict referrer policy.
+- `/opt/fleet/lib/verify-url.sh` passed: HTTP 200, no console errors, title,
+  language, one `<h1>`, a `<main>`, and no images without alternate text.
+
+To repeat the archive/header check:
 
 ```bash
 curl -sSI https://eye-comfort-profiles.sociobot.in/downloads/eye-comfort-profiles-chrome.zip
