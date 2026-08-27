@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eye Comfort Profiles</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#controls">Skip to controls</a>
+    <header class="panel-head">
+      <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div>
+        <p class="eyebrow">Reading instrument</p>
+        <h1>Eye Comfort</h1>
+      </div>
+      <div class="status-lamp" id="status-lamp" aria-hidden="true"></div>
+    </header>
+
+    <main id="controls">
+      <section class="site-status" aria-labelledby="site-heading">
+        <div>
+          <p class="engraved" id="site-heading">Current site</p>
+          <p class="host" id="host">Checking…</p>
+        </div>
+        <span class="state-chip" id="assignment-state">Stand by</span>
+      </section>
+
+      <div class="notice" id="notice" role="status" aria-live="polite" hidden></div>
+      <section id="unsupported" class="empty-state" hidden>
+        <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 49V15h40v34M20 24h24M20 32h15M20 40h20"/></svg>
+        <h2>This page is protected</h2>
+        <p>Browser settings, new tabs, and extension-store pages cannot be adjusted. Open a regular website to use a profile.</p>
+      </section>
+
+      <div id="app" hidden>
+        <section class="profile-bar" aria-labelledby="profile-heading">
+          <label for="profile-select" id="profile-heading">Profile</label>
+          <div class="profile-row">
+            <select id="profile-select"></select>
+            <button class="icon-button" id="new-profile" type="button" title="Create profile" aria-label="Create profile">+</button>
+            <button class="icon-button danger-button" id="delete-profile" type="button" title="Delete profile" aria-label="Delete selected profile">−</button>
+          </div>
+          <label class="name-field" for="profile-name">Profile name</label>
+          <input id="profile-name" maxlength="48" autocomplete="off" />
+        </section>
+
+        <section class="dial-bank" aria-label="Reading geometry">
+          <div class="control-row">
+            <div class="control-copy"><label for="font-family">Typeface</label><span>Choose a familiar fallback</span></div>
+            <select id="font-family"></select>
+          </div>
+          <div class="control-row range-row">
+            <div class="control-copy"><label for="font-size">Text size</label><output id="font-size-value" for="font-size"></output></div>
+            <input id="font-size" type="range" min="14" max="32" step="1" />
+          </div>
+          <div class="control-row range-row">
+            <div class="control-copy"><label for="line-height">Line spacing</label><output id="line-height-value" for="line-height"></output></div>
+            <input id="line-height" type="range" min="1.2" max="2.2" step="0.05" />
+          </div>
+          <div class="control-row range-row">
+            <div class="control-copy"><label for="line-width">Line width</label><output id="line-width-value" for="line-width"></output></div>
+            <input id="line-width" type="range" min="36" max="96" step="2" />
+          </div>
+          <div class="control-row range-row">
+            <div class="control-copy"><label for="letter-spacing">Letter spacing</label><output id="letter-spacing-value" for="letter-spacing"></output></div>
+            <input id="letter-spacing" type="range" min="0" max="0.12" step="0.01" />
+          </div>
+          <div class="control-row">
+            <div class="control-copy"><label for="theme">Reading surface</label><span>Checked contrast pairs</span></div>
+            <select id="theme"></select>
+          </div>
+        </section>
+
+        <section class="focus-control" aria-labelledby="focus-title">
+          <div>
+            <h2 id="focus-title">Reading focus band</h2>
+            <p>Move a quiet guide with your pointer or keyboard focus.</p>
+          </div>
+          <label class="switch"><span class="sr-only">Use reading focus band</span><input id="focus-band" type="checkbox" /><span aria-hidden="true"></span></label>
+          <div class="band-height" id="band-height-wrap" hidden>
+            <label for="focus-height">Band height</label>
+            <output id="focus-height-value" for="focus-height"></output>
+            <input id="focus-height" type="range" min="56" max="180" step="8" />
+          </div>
+        </section>
+
+        <div class="action-bank">
+          <button class="primary" id="assign" type="button">Save to this site</button>
+          <button class="secondary" id="clear" type="button" hidden>Stop using on this site</button>
+        </div>
+
+        <details class="utility-drawer">
+          <summary>Backup &amp; supporter options</summary>
+          <div class="utility-body">
+            <div class="button-pair">
+              <button type="button" id="export">Export backup</button>
+              <label class="file-button" for="import">Import backup</label>
+              <input id="import" type="file" accept="application/json,.json" />
+            </div>
+            <hr />
+            <p><strong>Supporter faceplates</strong> · $12 one-time</p>
+            <p class="small">Every reading feature stays free. Supporters unlock three decorative panel accents.</p>
+            <a class="buy-link" id="buy-link" target="_blank" rel="noreferrer">Buy supporter unlock</a>
+            <label for="license">Have a license? Paste it</label>
+            <div class="license-row"><input id="license" autocomplete="off" spellcheck="false" /><button id="restore" type="button">Restore</button></div>
+            <p class="small" id="license-state" aria-live="polite"></p>
+          </div>
+        </details>
+      </div>
+    </main>
+
+    <dialog id="delete-dialog" aria-labelledby="delete-title">
+      <h2 id="delete-title">Delete this profile?</h2>
+      <p id="delete-copy"></p>
+      <div class="dialog-actions"><button id="cancel-delete" type="button">Keep profile</button><button class="destructive" id="confirm-delete" type="button">Delete profile</button></div>
+    </dialog>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

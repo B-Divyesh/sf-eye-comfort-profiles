@@ -1,0 +1,30 @@
+{
+  "slug": "eye-comfort-profiles",
+  "title": "Eye Comfort Profiles",
+  "territory": "utilities",
+  "user": "People with astigmatism, low vision, or reading fatigue who need a repeatable per-site reading layout rather than re-adjusting browser zoom and display settings every session.",
+  "evidence": [
+    {
+      "url": "https://hn.algolia.com/api/v1/items/34051427",
+      "date": "2022-12-19",
+      "quote_or_summary": "A developer asks for ways to reduce eyestrain while coding with astigmatism and discusses the practical difficulty of using glasses and themes."
+    },
+    {
+      "url": "https://lobste.rs/s/rvhull",
+      "date": "2025-02-13",
+      "quote_or_summary": "The 2025 Hyperlegible font discussion includes users choosing it for e-readers and debates legibility versus dyslexia-specific needs, showing that typography preferences are personal and contextual."
+    }
+  ],
+  "recurrence": "A concrete eyestrain request and active 2025 typography discussion show that global font/theme choices do not fit every reader or source.",
+  "current_workaround": "Change browser zoom, toggle a theme, use OS magnification, or accept unreadable line lengths and contrast on a site-by-site basis.",
+  "incumbents_and_gap": "Browser zoom, reader modes, Stylus, and OS display options exist, but they are not a simple accessible profile system that consistently applies font, line length, spacing, contrast, and focus-line preferences to a chosen site or document type.",
+  "smallest_useful_product": "A browser extension with named per-site profiles, a live readability preview, font fallbacks, line-width/spacing controls, and an optional reading focus band. Non-goals: vision testing, blue-light medical claims, or forcing a single dyslexia font.",
+  "success_measure": "At least 70% of pilot users save three profiles and retain them after 14 days; users report fewer manual zoom/theme changes per reading session.",
+  "artifact_class": "browser-extension",
+  "monetization": "one-time — all meaningful layout control can run locally and should not require a subscription.",
+  "constraints": "Never claim to treat eye conditions; preserve page semantics and keyboard navigation; do not collect browsing history beyond optional local profile matching.",
+  "est_build_effort": "M",
+  "why_distinct": "It packages individualized, repeatable reading geometry rather than prescribing one font or replacing the browser reader mode.",
+  "confidence": 4,
+  "state": "RESEARCHED"
+}
