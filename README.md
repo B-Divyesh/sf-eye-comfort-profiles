@@ -57,12 +57,17 @@ To test the extension, open `chrome://extensions`, enable Developer mode, choose
 ```bash
 npm test
 npm run build
+npm run test:extension
 npx vite --config vite.site.config.ts --host 127.0.0.1
 ```
 
 Then inspect the site, `/privacy/`, and `/terms/`; load the unpacked extension;
 and test assignment, removal, focus band, backup import/export, keyboard focus,
 and a restricted browser page.
+
+`npm run test:extension` loads the production unpacked MV3 artifact in Chromium,
+exercises the popup using only keyboard controls, verifies its injected reading
+profile, and confirms a local profile update while the browser is offline.
 
 After deploying `dist/site`, run `npm run test:live`. It checks the public ZIP
 at the advertised path with `unzip -t`, immutable asset caching, response

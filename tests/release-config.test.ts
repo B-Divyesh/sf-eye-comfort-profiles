@@ -8,6 +8,7 @@ const staticConfig = JSON.parse(readFileSync('site/public/staticwebapp.config.js
   globalHeaders: Record<string, string>;
   routes: Array<{ route: string; headers: Record<string, string> }>;
 };
+const popupHtml = readFileSync('entrypoints/popup/index.html', 'utf8');
 
 describe('release configuration', () => {
   it('uses the live $19 Sociobot checkout mapping', () => {
@@ -31,5 +32,15 @@ describe('release configuration', () => {
     expect(headers['Permissions-Policy']).toContain('camera=()');
     expect(headers['X-Content-Type-Options']).toBe('nosniff');
     expect(headers['X-Frame-Options']).toBe('DENY');
+  });
+
+  it('lets keyboard users reach the advertised maximum focus-band height', () => {
+    const control = popupHtml.match(/<input id="focus-height"[^>]+>/)?.[0];
+    expect(control).toBeDefined();
+    const min = Number(control?.match(/min="(\d+)"/)?.[1]);
+    const max = Number(control?.match(/max="(\d+)"/)?.[1]);
+    const step = Number(control?.match(/step="(\d+)"/)?.[1]);
+    expect((max - min) % step).toBe(0);
+    expect(max).toBe(180);
   });
 });
