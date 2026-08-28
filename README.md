@@ -64,6 +64,11 @@ Then inspect the site, `/privacy/`, and `/terms/`; load the unpacked extension;
 and test assignment, removal, focus band, backup import/export, keyboard focus,
 and a restricted browser page.
 
+After deploying `dist/site`, run `npm run test:live`. It checks the public ZIP
+at the advertised path with `unzip -t`, immutable asset caching, response
+hardening headers, and the production Sociobot checkout redirect. Set
+`SITE_URL` to verify another static deployment target.
+
 The build uses no third-party runtime scripts, web fonts, analytics, or paid
 service other than the optional Sociobot-hosted checkout and license verify
 request. Production builds use `api.sociobot.in`.

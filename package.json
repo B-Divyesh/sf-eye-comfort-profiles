@@ -15,6 +15,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run tests/model.test.ts tests/release-config.test.ts",
     "test:release": "npm run build && vitest run tests/release-artifact.test.ts",
+    "test:live": "node scripts/verify-live-release.mjs",
     "test:watch": "vitest",
     "test:a11y": "playwright test"
   },
