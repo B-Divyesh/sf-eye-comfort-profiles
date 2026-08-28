@@ -9,6 +9,8 @@ const staticConfig = JSON.parse(readFileSync('site/public/staticwebapp.config.js
   routes: Array<{ route: string; headers: Record<string, string> }>;
 };
 const popupHtml = readFileSync('entrypoints/popup/index.html', 'utf8');
+const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { scripts: Record<string, string> };
+const productionDeploy = readFileSync('scripts/deploy-production.mjs', 'utf8');
 
 describe('release configuration', () => {
   it('uses the live $19 Sociobot checkout mapping', () => {
@@ -22,6 +24,13 @@ describe('release configuration', () => {
       route: '/assets/*',
       headers: { 'Cache-Control': 'public, max-age=31536000, immutable' }
     });
+  });
+
+  it('deploys the complete site directory and verifies the public extension archive afterwards', () => {
+    expect(packageJson.scripts['deploy:production']).toBe('node scripts/deploy-production.mjs');
+    expect(productionDeploy).toContain("run('/opt/fleet/lib/deploy-static.sh', [slug, directory]);");
+    expect(productionDeploy).toContain("run(process.execPath, ['scripts/verify-live-release.mjs']);");
+    expect(productionDeploy).toContain("`${directory}/downloads/eye-comfort-profiles-chrome.zip`");
   });
 
   it('ships the required static response hardening policies', () => {

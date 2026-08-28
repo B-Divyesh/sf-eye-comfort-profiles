@@ -17,6 +17,7 @@
     "test:release": "npm run build && vitest run tests/release-artifact.test.ts",
     "test:extension": "xvfb-run -a node scripts/extension-smoke.mjs",
     "test:live": "node scripts/verify-live-release.mjs",
+    "deploy:production": "node scripts/deploy-production.mjs",
     "test:watch": "vitest",
     "test:a11y": "playwright test"
   },

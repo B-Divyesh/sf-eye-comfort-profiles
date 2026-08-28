@@ -74,6 +74,11 @@ at the advertised path with `unzip -t`, immutable asset caching, response
 hardening headers, and the production Sociobot checkout redirect. Set
 `SITE_URL` to verify another static deployment target.
 
+For production releases, use `npm run build && npm run deploy:production`.
+That command deploys the complete `dist/site` directory (including the
+advertised `/downloads/` archive) and fails unless the public ZIP is a valid
+Eye Comfort Profiles Manifest V3 package.
+
 The build uses no third-party runtime scripts, web fonts, analytics, or paid
 service other than the optional Sociobot-hosted checkout and license verify
 request. Production builds use `api.sociobot.in`.

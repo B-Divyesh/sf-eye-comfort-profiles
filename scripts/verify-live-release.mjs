@@ -50,6 +50,12 @@ try {
   await writeFile(archivePath, archiveBytes);
   const unzip = spawnSync('unzip', ['-t', archivePath], { encoding: 'utf8' });
   if (unzip.status !== 0) throw new Error(`Downloaded archive fails unzip -t: ${unzip.stderr || unzip.stdout}`);
+  const manifest = spawnSync('unzip', ['-p', archivePath, 'manifest.json'], { encoding: 'utf8' });
+  if (manifest.status !== 0) throw new Error('Downloaded archive does not contain manifest.json.');
+  const parsedManifest = JSON.parse(manifest.stdout);
+  if (parsedManifest.manifest_version !== 3 || parsedManifest.name !== 'Eye Comfort Profiles') {
+    throw new Error('Downloaded archive does not contain the expected Eye Comfort Profiles MV3 manifest.');
+  }
 } finally {
   await rm(directory, { recursive: true, force: true });
 }
