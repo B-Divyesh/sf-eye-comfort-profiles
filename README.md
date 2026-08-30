@@ -30,7 +30,7 @@ realistic reading setup, saves nothing, and resets in one click.
 
 ## Requirements
 
-- Node.js 20 or newer
+- Node.js 22 or newer
 - npm 10 or newer
 - A Chromium-family browser for loading the built extension
 
