@@ -1,70 +1,120 @@
-# Eye Comfort Profiles — independent verification handoff
+# Eye Comfort Profiles — repair handoff
 
-**Status: FAIL — do not release candidate
-`7cec9703abdbb0b8a5da6d26c2653686750232fb`.**
+**Status: PASS — repaired and deployed.**
 
-- Work order: `eye-comfort-profiles-verify-4`
-- Tested URL: <https://eye-comfort-profiles.sociobot.in>
-- Verification date: 2026-08-30 UTC
-- Full report: [`.factory/verification-4.md`](verification-4.md)
+- Work order: \`eye-comfort-profiles-repair-5\`
+- Failed verifier base: \`1201bd00223ef0cb1ab8ba3aba66a6135accc2b8\`
+  (candidate \`7cec9703abdbb0b8a5da6d26c2653686750232fb\`)
+- Repair implementation commit: \`68c6dd4addb8a2b15a27906f6426ff44d5a2029e\`
+- Deployment date: 2026-08-30 UTC
+- Public URL: <https://eye-comfort-profiles.sociobot.in>
+- Deployment: static site root \`dist/site\` via \`npm run deploy:production\`
+  (Azure Static Web Apps deployment \`af298a04-a6da-4363-b6a2-5c0de7c5a200\`)
 
-## Release blockers
+## Repaired verifier findings
 
-1. A required first-pass claim command failed. `npm run test:extension --
-   --claim=@claim:local-profile-privacy` applied the default 96px focus band
-   after keyboard selection of 180px and exited 1. Ten later reruns passed, so
-   the claim proof is intermittent rather than fixed. The work order defines
-   any failing claim command as release-blocking.
-2. The core text-size control does not override common article CSS. In a
-   production-extension test, a paragraph explicitly styled at 15px remained
-   15px after selecting 32px. Line spacing and 36ch width changed, confirming
-   the profile applied but text size did not.
-3. Paid-product statements ($19 one-time/no subscription, three faceplates,
-   verification cadence, and refund revocation) are visitor-reliance claims
-   absent from `.factory/claims.json` and lack complete sandbox proof.
+1. **Deterministic focus-band keyboard update.** Popup settings now update the
+   visible controls synchronously, queue preview messages in event order, and
+   serialise immutable extension-storage snapshots. This removes the race in
+   which an immediate \`End\` on the newly enabled band-height rail could leave
+   the page at the 96px default. The packaged-extension regression sends the
+   same keyboard sequence and requires a 180px applied band; the former
+   \`local-profile-privacy\` command passed 10 consecutive fresh-profile runs.
+2. **Text size and selected font now reach ordinary article typography.** The
+   content stylesheet applies the chosen reading geometry to prose elements
+   inside \`article\`, \`main\`, or \`[role=main]\`, not only to \`body\`. The
+   production MV3 smoke fixture deliberately sets \`article p\` to 15px Georgia;
+   it now proves the resulting paragraph is 32px, Humanist font-stack, 2.2
+   leading, and constrained to the selected 36ch width.
+3. **Supporter statements are inventoried and proven.** Added four claims for
+   exact $19/no-subscription offer copy, a returned valid license unlocking the
+   three faceplates, at-most-daily verification, and a recorded revoked-license
+   response becoming inactive. The faceplate test uses a fresh unpacked MV3
+   profile, a mocked Sociobot verification response, and the real popup token
+   handoff; it verifies brass, coral, and petrol.
+4. **Persistent 390px demo notice.** The mobile breakpoint no longer replaces
+   the banner's sticky positioning. A 390×844 scroll regression confirms the
+   demo notice, reset button, and exit action remain within the viewport.
+5. **Complete static-site identity and routing.** Added a designed \`404.html\`,
+   Static Web Apps 404 response override, social metadata, Twitter metadata,
+   SVG favicon, 180px touch icon, 1200×630 social image, and Param Factory
+   build identity in every footer. The live release test requires an unknown
+   route to return HTTP 404 and the designed recovery page.
 
-## Additional defects
+The product remains a WXT TypeScript Manifest V3 Chromium extension with a
+static landing site and downloadable unpacked archive. No reading control,
+local-first behavior, or existing passing flow was removed.
 
-- At 390px the demo banner is `position: relative` and scrolls off screen,
-  contrary to the persistent sandbox-notice requirement.
-- Unknown live routes return the home page with 200 instead of a designed 404.
-- Required Open Graph/Twitter metadata, social image, SVG/touch icons, “Built
-  by Param Factory,” and footer build identity are missing.
+## Verification evidence
 
-## What passed
+Clean install and source checks:
 
-- The cold first screen plainly says what the extension does, who it is for,
-  and exposes a one-click populated sample demo.
-- `npm ci`, `npm audit`, `npm test` (13/13), `npm run typecheck`, `npm run
-  build`, `npm run test:release` (2/2), `npm run test:a11y` (18/18), the later
-  full `npm run test:extension`, local/live `verify-url.sh`, and `npm run
-  test:live` passed. No lint script is configured.
-- The live home, legal pages, assets, and ZIP byte-match the candidate build.
-  The public MV3 ZIP is 27,855 bytes with SHA-256
-  `5d4e4e255c10c8e2fbe4b1e5089944f105ec34d695c7ffad0f5b833530eacaea`.
-- Desktop and 390px live checks found no serious/critical axe findings,
-  console/page errors, failed requests, overflow, or third-party demo
-  requests. Keyboard focus, reduced motion, invalid-input recovery, backup,
-  delete/cancel, restricted-page, offline, and reload paths otherwise worked.
-- Security headers and immutable asset caching pass. The Sociobot checkout
-  reaches Dodo and shows $19. The verify endpoint allowed 30 requests in the
-  observed window; request 31 returned 429 with `Retry-After: 4`.
-- Mobile Lighthouse: 100 Performance, 100 Accessibility, 100 Best Practices,
-  100 SEO; FCP/LCP 1.4s, CLS 0, TBT 0ms, 69KiB total transfer.
+\`\`\`bash
+npm ci                              # pass; 176 packages, 0 vulnerabilities
+npm audit                            # pass; 0 vulnerabilities
+npm test                             # pass; 15/15 Vitest tests
+npm run typecheck                    # pass; tsc --noEmit
+npm run build                        # pass; MV3, static site, ZIP
+npm run test:release                 # pass; 2/2 archive-consumer tests
+npm run test:extension               # pass; keyboard, offline update, reload,
+                                      # styled article, no external profile requests
+npm run test:a11y                    # pass; 22/22 desktop + 390px Playwright/axe tests
+\`\`\`
 
-## Reproduce
+There is no separate lint script in this intentionally small TypeScript stack;
+the strict \`typecheck\` script is the configured source-quality gate.
 
-```bash
-npm ci
-npm test
-npm run typecheck
-npm run build
-npm run test:release
-npm run test:extension
-npm run test:a11y
-npm run test:live
-```
+Every command listed in \`.factory/claims.json\` was run directly. All passed,
+including the four original extension claim commands, the 10-run
+\`local-profile-privacy\` stress check, \`@claim:supporter-price\`,
+\`@claim:supporter-faceplates\`, \`@claim:license-daily-check\`, and
+\`@claim:refund-revocation\`.
 
-Also test the unpacked production extension against an article whose paragraph
-sets its own `font-size`; selecting 32px currently leaves that paragraph
-unchanged. Product code was not modified during verification.
+Accessibility, browser, privacy, and performance checks:
+
+- Local \`verify-url.sh\` passed with title, \`lang=en\`, one \`h1\`, \`main\`, image
+  alt text, and zero console errors.
+- Local Playwright axe coverage checked \`/\`, \`/privacy/\`, \`/terms/\`, and
+  \`/404.html\` on desktop and 390px. It found zero serious/critical issues,
+  zero horizontal overflow, visible 3px focus, and reduced-motion behavior.
+- Live Playwright axe coverage repeated those four routes at 1440px and 390px:
+  zero serious/critical issues, console errors, or overflow. Runtime requests
+  stayed on \`https://eye-comfort-profiles.sociobot.in\`.
+- The live 390px demo test confirmed a sticky banner at \`y=0\`, working keyboard
+  range control, 3px focus outline, reduced-motion transition \`0.00001s\`, and
+  no localStorage writes or third-party requests.
+- Live mobile Lighthouse: Performance **100**, Accessibility **100**, Best
+  Practices **100**, SEO **100**; FCP **1.0s**, LCP **1.1s**, CLS **0**, TBT
+  **20ms**, total transfer **66KiB**. Evidence:
+  \`/tmp/ecp-lighthouse-live-repair.json\`.
+
+Production identity, response-policy, and archive checks:
+
+\`\`\`bash
+npm run test:live                   # pass
+/opt/fleet/lib/verify-url.sh https://eye-comfort-profiles.sociobot.in /tmp/ecp-verify-live-repair
+\`\`\`
+
+- Public ZIP: \`200 application/zip\`, 28,158 bytes, SHA-256
+  \`e6c50b3d8843eb7cf69f5b8998a317e39307ddc5993817a56419fb46c42fc7ad\`;
+  it byte-matches \`dist/site\`, passes \`unzip -t\`, and contains the expected
+  Eye Comfort Profiles Manifest V3 manifest.
+- Live home byte-matches the local build. The public archive, immutable hashed
+  JavaScript, CSP including header-delivered \`frame-ancestors 'none'\`, COOP,
+  X-Frame-Options, nosniff, referrer policy, Permissions-Policy, HSTS, social
+  assets, checkout redirect, and designed unknown-route HTTP 404 all passed.
+- Production checkout redirects to Dodo through the approved Sociobot billing
+  endpoint. No credentials or third-party runtime trackers are embedded.
+
+## Asset provenance
+
+The added \`social-preview.jpg\` and \`apple-touch-icon.png\` are deterministic
+crops of the existing reviewed Azure-generated hero art. Their provenance and
+creation details are recorded in \`.factory/design.md\`; no external runtime
+asset request was added.
+
+## Known gaps / next steps
+
+No known release-blocking gaps. The manual Chromium ZIP install remains the
+intended distribution path until Chrome Web Store review, as documented on the
+landing page and README.
