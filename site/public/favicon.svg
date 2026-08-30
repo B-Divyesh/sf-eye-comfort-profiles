@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title id="title">Eye Comfort Profiles calibration dial</title>
+  <rect x="6" y="6" width="116" height="116" rx="24" fill="#f7f2e8" stroke="#202825" stroke-width="8"/>
+  <path d="M24 38h80M24 64h80M24 90h80" stroke="#174f52" stroke-width="9" stroke-linecap="round"/>
+  <path d="M16 53h96v22H16z" fill="#eaa47e" opacity=".9"/>
+  <circle cx="64" cy="64" r="12" fill="#d85f3e" stroke="#202825" stroke-width="5"/>
+</svg>

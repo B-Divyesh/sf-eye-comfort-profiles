@@ -6,18 +6,23 @@ import { chromium } from 'playwright';
 
 const extensionPath = join(process.cwd(), 'dist/extension/chrome-mv3');
 const chromePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? chromium.executablePath();
-const articleMarkup = '<!doctype html><html><head><title>Reading sample</title></head><body><main><article><h1>Local article</h1><p>A comfortable local reading sample.</p><button id="reader-button">Continue reading</button></article></main></body></html>';
+// A representative article sets its own prose typography, as common CMS
+// themes do. This guards the regression where body-only CSS lost to p rules.
+const articleMarkup = '<!doctype html><html><head><title>Reading sample</title><style>article p { font-family: Georgia, serif; font-size: 15px; line-height: 1.35; letter-spacing: normal; max-width: 90ch; }</style></head><body><main><article><h1>Local article</h1><p id="article-copy">A comfortable local reading sample.</p><button id="reader-button">Continue reading</button></article></main></body></html>';
 const claimTags = [
   '@claim:free-reading-controls',
   '@claim:local-profile-privacy',
   '@claim:offline-profile',
-  '@claim:site-profile-reload'
+  '@claim:site-profile-reload',
+  '@claim:supporter-faceplates'
 ];
+const [freeReadingControlsClaim, localProfilePrivacyClaim, offlineProfileClaim, siteProfileReloadClaim, supporterFaceplatesClaim] = claimTags;
 
 const requestedClaim = process.argv.find((argument) => argument.startsWith('--claim='))?.slice('--claim='.length);
 if (requestedClaim && !claimTags.includes(requestedClaim)) {
   throw new Error(`Unknown claim tag: ${requestedClaim}`);
 }
+const runsClaim = (tag) => !requestedClaim || requestedClaim === tag;
 
 function findExtensionId(root = document) {
   for (const element of root.querySelectorAll('*')) {
@@ -54,10 +59,11 @@ try {
   await article.goto(`http://127.0.0.1:${port}/article`);
   const untouched = await article.evaluate(() => ({
     fontSize: getComputedStyle(document.body).fontSize,
+    paragraphFontSize: getComputedStyle(document.querySelector('#article-copy')).fontSize,
     profileStyle: Boolean(document.getElementById('eye-comfort-profiles-style')),
     focusBand: Boolean(document.getElementById('eye-comfort-profiles-band'))
   }));
-  if (untouched.fontSize !== '16px' || untouched.profileStyle || untouched.focusBand) {
+  if (untouched.fontSize !== '16px' || untouched.paragraphFontSize !== '15px' || untouched.profileStyle || untouched.focusBand) {
     throw new Error(`The page changed before explicit profile assignment: ${JSON.stringify(untouched)}`);
   }
 
@@ -79,6 +85,10 @@ try {
 
   await popup.locator('#font-size').focus();
   await popup.keyboard.press('End');
+  await popup.locator('#line-height').focus();
+  await popup.keyboard.press('End');
+  await popup.locator('#line-width').focus();
+  await popup.keyboard.press('Home');
   await popup.locator('#theme').selectOption('slate');
   await popup.locator('#focus-band').focus();
   await popup.keyboard.press('Space');
@@ -87,43 +97,107 @@ try {
   await popup.locator('#assign').focus();
   await popup.keyboard.press('Enter');
 
-  await article.waitForFunction(() => getComputedStyle(document.body).fontSize === '32px' && Boolean(document.getElementById('eye-comfort-profiles-band')));
+  await popup.waitForFunction(() => document.querySelector('#assign')?.textContent === 'Saved to this site');
+  await article.waitForFunction(() => {
+    const copy = document.querySelector('#article-copy');
+    const band = document.getElementById('eye-comfort-profiles-band');
+    return getComputedStyle(document.body).fontSize === '32px'
+      && getComputedStyle(copy).fontSize === '32px'
+      && getComputedStyle(band).height === '180px';
+  });
   await article.locator('#reader-button').focus();
   const applied = await article.evaluate(() => {
     const band = document.getElementById('eye-comfort-profiles-band');
+    const copy = document.querySelector('#article-copy');
     return {
       fontSize: getComputedStyle(document.body).fontSize,
+      paragraphFontSize: getComputedStyle(copy).fontSize,
+      paragraphFontFamily: getComputedStyle(copy).fontFamily,
+      paragraphLineHeight: getComputedStyle(copy).lineHeight,
+      paragraphMaxWidth: getComputedStyle(copy).maxWidth,
       background: getComputedStyle(document.body).backgroundColor,
       bandHeight: band ? getComputedStyle(band).height : null,
       bandTop: band?.getBoundingClientRect().top
     };
   });
-  if (applied.fontSize !== '32px' || applied.background !== 'rgb(28, 37, 38)' || applied.bandHeight !== '180px' || typeof applied.bandTop !== 'number') {
+  if (runsClaim(freeReadingControlsClaim) && (
+    applied.fontSize !== '32px'
+    || applied.paragraphFontSize !== '32px'
+    || !applied.paragraphFontFamily.includes('Trebuchet')
+    || applied.paragraphLineHeight !== '70.4px'
+    || applied.paragraphMaxWidth === 'none'
+    || applied.background !== 'rgb(28, 37, 38)'
+    || applied.bandHeight !== '180px'
+    || typeof applied.bandTop !== 'number'
+  )) {
     throw new Error(`Profile did not apply its keyboard-selected bounds: ${JSON.stringify(applied)}`);
   }
 
-  await context.setOffline(true);
-  await popup.locator('#font-size').focus();
-  await popup.keyboard.press('ArrowLeft');
-  await article.waitForFunction(() => getComputedStyle(document.body).fontSize === '31px');
-  await context.setOffline(false);
-  await article.reload();
-  await article.waitForFunction(() => getComputedStyle(document.body).fontSize === '31px' && Boolean(document.getElementById('eye-comfort-profiles-band')));
+  let supporterFaceplates = 'not selected';
+  if (requestedClaim === supporterFaceplatesClaim) {
+    const token = 'returned-supporter-token';
+    const licenseKey = 'sb_license:eye-comfort-profiles';
+    await context.route(`https://api.sociobot.in/api/v1/products/eye-comfort-profiles/verify?license=${token}`, (route) => route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ valid: true, reason: 'ok', expires_at: null })
+    }));
+    // This is the same handoff location used when the product site returns a
+    // license to the installed extension. Popup init moves it into its local
+    // license store, verifies it, and only then reveals decorative options.
+    await popup.evaluate(async ({ key, value }) => { await chrome.storage.local.set({ [key]: value }); }, { key: licenseKey, value: token });
+    await popup.reload();
+    await popup.waitForSelector('#app:not([hidden])');
+    await popup.locator('summary').click();
+    await popup.waitForSelector('#faceplate-options:not([hidden])');
+    const faceplates = await popup.locator('#faceplate option').evaluateAll((options) => options.map((option) => option.value));
+    if (JSON.stringify(faceplates) !== JSON.stringify(['brass', 'coral', 'petrol'])) {
+      throw new Error(`Verified license did not reveal the three supporter faceplates: ${JSON.stringify(faceplates)}`);
+    }
+    await popup.locator('#faceplate').selectOption('petrol');
+    if (await popup.evaluate(() => document.body.dataset.faceplate) !== 'petrol') {
+      throw new Error('Selected supporter faceplate did not apply to the popup.');
+    }
+    const transferred = await popup.evaluate(async (key) => (await chrome.storage.local.get(key))[key], licenseKey);
+    if (transferred !== undefined) throw new Error('Returned license token was not moved into local license storage.');
+    supporterFaceplates = 'verified returned token unlocked brass, coral, and petrol faceplates';
+  }
+
+  let offlineUpdate = 'not selected';
+  if (runsClaim(offlineProfileClaim)) {
+    await context.setOffline(true);
+    await popup.locator('#font-size').focus();
+    await popup.keyboard.press('ArrowLeft');
+    await article.waitForFunction(() => getComputedStyle(document.querySelector('#article-copy')).fontSize === '31px');
+    await context.setOffline(false);
+    offlineUpdate = '31px applied with the browser offline';
+  }
+
+  let reload = 'not selected';
+  if (runsClaim(siteProfileReloadClaim)) {
+    const expectedSize = runsClaim(offlineProfileClaim) ? '31px' : '32px';
+    await article.reload();
+    await article.waitForFunction((fontSize) => getComputedStyle(document.querySelector('#article-copy')).fontSize === fontSize && Boolean(document.getElementById('eye-comfort-profiles-band')), expectedSize);
+    reload = `${expectedSize} reapplied from local extension storage`;
+  }
 
   const unexpectedRequests = requests.filter((value) => {
     const url = new URL(value);
     return ['http:', 'https:'].includes(url.protocol) && url.hostname !== '127.0.0.1';
   });
-  if (unexpectedRequests.length) throw new Error(`The local profile flow sent external requests: ${unexpectedRequests.join(', ')}`);
+  if (runsClaim(localProfilePrivacyClaim) && unexpectedRequests.length) {
+    throw new Error(`The local profile flow sent external requests: ${unexpectedRequests.join(', ')}`);
+  }
   if (consoleErrors.length) throw new Error(`Article emitted console errors: ${consoleErrors.join('; ')}`);
 
   console.log(JSON.stringify({
-    claims: claimTags,
+    claims: requestedClaim ? [requestedClaim] : claimTags.filter((claim) => claim !== supporterFaceplatesClaim),
     extensionId,
     untouched,
     applied,
-    offlineUpdate: '31px applied with the browser offline',
-    reload: '31px reapplied from local extension storage',
+    supporterFaceplates,
+    offlineUpdate,
+    reload,
     externalRequests: unexpectedRequests,
     consoleErrors
   }, null, 2));

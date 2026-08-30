@@ -4,13 +4,14 @@ import { BILLING_BASE, checkoutUrl } from '../shared/license';
 import { PRODUCT_SLUG } from '../shared/model';
 
 const staticConfig = JSON.parse(readFileSync('site/public/staticwebapp.config.json', 'utf8')) as {
-  navigationFallback: { exclude: string[] };
   globalHeaders: Record<string, string>;
   routes: Array<{ route: string; headers: Record<string, string> }>;
+  responseOverrides: Record<string, { rewrite: string; statusCode: number }>;
 };
 const popupHtml = readFileSync('entrypoints/popup/index.html', 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { scripts: Record<string, string> };
 const productionDeploy = readFileSync('scripts/deploy-production.mjs', 'utf8');
+const liveVerification = readFileSync('scripts/verify-live-release.mjs', 'utf8');
 
 describe('release configuration', () => {
   it('uses the live $19 Sociobot checkout mapping', () => {
@@ -18,8 +19,11 @@ describe('release configuration', () => {
     expect(checkoutUrl()).toBe(`https://api.sociobot.in/api/v1/products/${PRODUCT_SLUG}/checkout`);
   });
 
-  it('keeps downloads out of the HTML fallback and caches hashed assets immutably', () => {
-    expect(staticConfig.navigationFallback.exclude).toContain('/downloads/*');
+  it('uses a designed 404 response and caches hashed assets immutably', () => {
+    expect(staticConfig.responseOverrides['404']).toEqual({ rewrite: '/404.html', statusCode: 404 });
+    expect(readFileSync('site/404.html', 'utf8')).toContain('<h1>That page is not here.</h1>');
+    expect(liveVerification).toContain("new URL('/this-route-does-not-exist', site)");
+    expect(liveVerification).toContain('missing.status !== 404');
     expect(staticConfig.routes).toContainEqual({
       route: '/assets/*',
       headers: { 'Cache-Control': 'public, max-age=31536000, immutable' }

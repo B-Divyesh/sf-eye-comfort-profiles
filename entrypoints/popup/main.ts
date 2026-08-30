@@ -1,5 +1,5 @@
 import { browser } from 'wxt/browser';
-import { FONT_OPTIONS, THEME_OPTIONS, createProfile, importState, isSupportedUrl, stateForExport, type ComfortProfile, type ComfortState, type ProfileSettings } from '../../shared/model';
+import { FONT_OPTIONS, THEME_OPTIONS, createProfile, importState, isSupportedUrl, normalizeSettings, normalizeState, stateForExport, type ComfortProfile, type ComfortState, type ProfileSettings } from '../../shared/model';
 import { LICENSE_KEY, checkoutUrl, cachedVerdict, saveLicense, verifyLicense } from '../../shared/license';
 import { readState, writeState } from '../../shared/storage';
 
@@ -27,6 +27,41 @@ let state: ComfortState;
 let activeTabId: number | undefined;
 let host = '';
 let selectedId = '';
+let writeQueue: Promise<void> = Promise.resolve();
+let previewQueue: Promise<void> = Promise.resolve();
+
+/**
+ * Extension storage writes are asynchronous. Serialising snapshots prevents an
+ * earlier control event from overwriting a newer keyboard adjustment.
+ */
+function queueStateWrite(): Promise<void> {
+  const snapshot = normalizeState(structuredClone(state));
+  writeQueue = writeQueue.catch(() => undefined).then(() => writeState(snapshot));
+  return writeQueue;
+}
+
+async function saveState(): Promise<void> {
+  try {
+    await queueStateWrite();
+  } catch {
+    showNotice('Profiles could not be saved. Try again or export a backup.', 'error');
+  }
+}
+
+async function sendPreview(settings: ProfileSettings): Promise<void> {
+  if (activeTabId === undefined) return;
+  try {
+    await browser.tabs.sendMessage(activeTabId, { type: 'ECP_PREVIEW', settings });
+  } catch {
+    showNotice('This page stopped responding. Reload it and try again.', 'warning');
+  }
+}
+
+function queuePreview(settings: ProfileSettings): Promise<void> {
+  const snapshot = normalizeSettings(settings);
+  previewQueue = previewQueue.catch(() => undefined).then(() => sendPreview(snapshot));
+  return previewQueue;
+}
 
 function unlockSupporter(): void {
   const faceplate = localStorage.getItem('ecp_faceplate') ?? 'brass';
@@ -113,13 +148,12 @@ async function persistAndPreview(): Promise<void> {
   const profile = currentProfile();
   profile.settings = settingsFromForm();
   profile.updatedAt = Date.now();
-  await writeState(state);
+  // Make a newly enabled focus-height rail usable in the same keyboard turn,
+  // before slow extension storage resolves. The queued work below preserves
+  // the event order for both page preview and persisted state.
   renderReadouts(profile.settings);
   byId<HTMLElement>('band-height-wrap').hidden = !profile.settings.focusBand;
-  if (activeTabId !== undefined) {
-    try { await browser.tabs.sendMessage(activeTabId, { type: 'ECP_PREVIEW', settings: profile.settings }); }
-    catch { showNotice('This page stopped responding. Reload it and try again.', 'warning'); }
-  }
+  await Promise.all([saveState(), queuePreview(profile.settings)]);
 }
 
 async function initLicense(): Promise<void> {
@@ -173,7 +207,7 @@ for (const input of Object.values(form)) input.addEventListener('input', () => v
 profileSelect.addEventListener('change', () => {
   selectedId = profileSelect.value;
   renderForm();
-  void browser.tabs.sendMessage(activeTabId!, { type: 'ECP_PREVIEW', settings: currentProfile().settings }).catch(() => undefined);
+  void queuePreview(currentProfile().settings);
 });
 
 profileName.addEventListener('change', async () => {
@@ -181,7 +215,7 @@ profileName.addEventListener('change', async () => {
   if (!value) { profileName.value = currentProfile().name; showNotice('Profile name cannot be empty.', 'error'); return; }
   currentProfile().name = value.slice(0, 48);
   currentProfile().updatedAt = Date.now();
-  await writeState(state);
+  await saveState();
   renderProfileList();
   showNotice('Profile renamed.');
 });
@@ -191,7 +225,7 @@ byId<HTMLButtonElement>('new-profile').addEventListener('click', async () => {
   profile.settings = { ...currentProfile().settings };
   state.profiles.push(profile);
   selectedId = profile.id;
-  await writeState(state);
+  await saveState();
   renderProfileList(); renderForm();
   profileName.focus(); profileName.select();
   showNotice('New profile ready. Name it, then tune the controls.');
@@ -207,21 +241,21 @@ byId<HTMLButtonElement>('confirm-delete').addEventListener('click', async () => 
   state.profiles = state.profiles.filter(({ id }) => id !== deletedId);
   state.assignments = Object.fromEntries(Object.entries(state.assignments).filter(([, id]) => id !== deletedId));
   selectedId = state.profiles[0]!.id;
-  await writeState(state);
+  await saveState();
   dialog.close(); renderProfileList(); renderForm();
   showNotice('Profile deleted.', 'warning');
 });
 
 byId<HTMLButtonElement>('assign').addEventListener('click', async () => {
   state.assignments[host] = selectedId;
-  await writeState(state);
+  await saveState();
   paintAssignment();
   showNotice(`“${currentProfile().name}” will return on ${host}.`);
 });
 
 byId<HTMLButtonElement>('clear').addEventListener('click', async () => {
   delete state.assignments[host];
-  await writeState(state);
+  await saveState();
   await browser.tabs.sendMessage(activeTabId!, { type: 'ECP_CLEAR' }).catch(() => undefined);
   paintAssignment();
   showNotice(`Profile removed from ${host}.`, 'warning');
@@ -244,7 +278,7 @@ byId<HTMLInputElement>('import').addEventListener('change', async (event) => {
   try {
     state = importState(await file.text());
     selectedId = state.profiles[0]!.id;
-    await writeState(state);
+    await saveState();
     renderProfileList(); renderForm();
     showNotice('Backup imported. Existing profiles were replaced.');
   } catch (error) {

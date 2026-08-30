@@ -13,7 +13,7 @@
     "package:extension": "wxt zip && node scripts/stage-extension.mjs",
     "build": "npm run clean && npm run build:site",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run tests/model.test.ts tests/release-config.test.ts tests/claims.test.ts",
+    "test": "vitest run tests/model.test.ts tests/license.test.ts tests/release-config.test.ts tests/claims.test.ts",
     "test:release": "npm run clean && npm run build:site && vitest run tests/release-artifact.test.ts",
     "test:extension": "xvfb-run -a node scripts/extension-smoke.mjs",
     "test:live": "node scripts/verify-live-release.mjs",

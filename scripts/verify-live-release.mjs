@@ -39,6 +39,16 @@ const html = await home.text();
 if (!html.includes('href="/downloads/eye-comfort-profiles-chrome.zip"')) {
   throw new Error('Home page does not advertise the verified extension path.');
 }
+for (const marker of [
+  'property="og:image"',
+  'name="twitter:card"',
+  'href="/favicon.svg"',
+  'href="/apple-touch-icon.png"',
+  'Built by Param Factory',
+  'v1.0.1'
+]) {
+  if (!html.includes(marker)) throw new Error(`Home page is missing required product identity markup: ${marker}`);
+}
 if (existsSync('dist/site/index.html')) {
   const localHtml = await readFile('dist/site/index.html', 'utf8');
   if (createHash('sha256').update(html).digest('hex') !== createHash('sha256').update(localHtml).digest('hex')) {
@@ -92,11 +102,28 @@ if (checkout.status !== 303 || !checkout.headers.get('location')?.startsWith('ht
   throw new Error(`Production checkout mapping is not a Sociobot/Dodo redirect (got ${checkout.status}).`);
 }
 
-await Promise.all(['/privacy/', '/terms/', '/robots.txt', '/sitemap.xml'].map((path) => response(new URL(path, site))));
+await Promise.all([
+  '/privacy/',
+  '/terms/',
+  '/robots.txt',
+  '/sitemap.xml',
+  '/social-preview.jpg',
+  '/favicon.svg',
+  '/apple-touch-icon.png'
+].map((path) => response(new URL(path, site))));
+
+const missingUrl = new URL('/this-route-does-not-exist', site);
+const missing = await fetch(missingUrl);
+if (missing.status !== 404) throw new Error(`Unknown routes must return the designed 404 response (got ${missing.status}).`);
+const missingHtml = await missing.text();
+if (!missingHtml.includes('<h1>That page is not here.</h1>') || !missingHtml.includes('Built by Param Factory')) {
+  throw new Error('Unknown route did not return the designed Eye Comfort Profiles 404 page.');
+}
 
 console.log(JSON.stringify({
   site,
   download: { url: downloadUrl.href, bytes: archiveBytes.length, sha256: archiveHash, matchesLocalBuild: existsSync(localArchivePath) },
   asset,
-  checkout: checkout.headers.get('location')
+  checkout: checkout.headers.get('location'),
+  notFound: { url: missingUrl.href, status: missing.status }
 }, null, 2));

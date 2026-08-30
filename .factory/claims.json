@@ -54,5 +54,33 @@
     "where": "landing features, extension popup, privacy page, and README",
     "test": "npx vitest run tests/model.test.ts -t @claim:backup-roundtrip",
     "sandbox": "sample named profile and hostname assignment; export JSON, import it, and assert exact normalized state equality"
+  },
+  {
+    "id": "supporter-price",
+    "claim": "The optional decorative supporter unlock is $19 once, with no subscription; reading controls remain free.",
+    "where": "landing supporter section, extension popup, terms, and README",
+    "test": "npm run test:a11y -- --grep @claim:supporter-price",
+    "sandbox": "local landing page; assert the exact $19 and no-subscription copy, Sociobot checkout mapping, and free-control statement"
+  },
+  {
+    "id": "supporter-faceplates",
+    "claim": "A valid returned supporter license unlocks exactly three decorative faceplates.",
+    "where": "landing supporter section and extension popup",
+    "test": "npm run test:extension -- --claim=@claim:supporter-faceplates",
+    "sandbox": "fresh unpacked extension; intercept the Sociobot verification response for a returned token, then assert the token handoff and brass, coral, and petrol faceplates"
+  },
+  {
+    "id": "license-daily-check",
+    "claim": "A stored supporter license is verified at most once per day.",
+    "where": "privacy policy and extension popup",
+    "test": "npx vitest run tests/license.test.ts -t @claim:license-daily-check",
+    "sandbox": "memory-backed browser storage and recorded valid verification response; advance the clock just under and then at one day"
+  },
+  {
+    "id": "refund-revocation",
+    "claim": "A verification response for a refunded license makes its decorative unlock inactive.",
+    "where": "terms and supporter purchase note",
+    "test": "npx vitest run tests/license.test.ts -t @claim:refund-revocation",
+    "sandbox": "memory-backed browser storage and recorded Sociobot revoked-license response; assert the cached verdict is inactive"
   }
 ]

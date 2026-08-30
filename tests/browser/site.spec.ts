@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-for (const path of ['/', '/privacy/', '/terms/']) {
+for (const path of ['/', '/privacy/', '/terms/', '/404.html']) {
   test(`${path} has clean serious accessibility results`, async ({ page }) => {
     const consoleErrors: string[] = [];
     const pageErrors: string[] = [];
@@ -14,6 +14,13 @@ for (const path of ['/', '/privacy/', '/terms/']) {
     await expect(page).toHaveTitle(/\S+ — Eye Comfort Profiles|Eye Comfort Profiles — \S+/);
     await expect(page.locator('main')).toHaveCount(1);
     await expect(page.locator('h1')).toHaveCount(1);
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', /Eye Comfort Profiles/);
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /social-preview\.jpg$/);
+    await expect(page.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveAttribute('href', '/favicon.svg');
+    await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href', '/apple-touch-icon.png');
+    await expect(page.locator('footer')).toContainText('Built by Param Factory');
+    await expect(page.locator('footer')).toContainText('v1.0.1');
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical')).toEqual([]);
     expect(consoleErrors).toEqual([]);
@@ -45,6 +52,20 @@ test('@claim:sample-demo opens sample settings in one click and saves nothing', 
   await page.locator('#demo-size').fill('28');
   await page.getByRole('button', { name: 'Reset demo' }).click();
   await expect(page.locator('#demo-size-value')).toHaveText('24 px');
+});
+
+test('demo notice and its reset actions remain visible after a 390px reader scroll', async ({ page }) => {
+  await page.goto('/?demo=1');
+  await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
+  await expect(page.locator('#demo-banner')).toBeVisible();
+  const banner = await page.locator('#demo-banner').boundingBox();
+  const viewport = page.viewportSize();
+  expect(banner).not.toBeNull();
+  expect(viewport).not.toBeNull();
+  expect(banner!.y).toBeGreaterThanOrEqual(0);
+  expect(banner!.y + banner!.height).toBeLessThanOrEqual(viewport!.height);
+  await expect(page.getByRole('button', { name: 'Reset demo' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Start for real' })).toBeVisible();
 });
 
 test('@claim:first-party-site sends no third-party runtime requests', async ({ page }) => {
@@ -81,11 +102,13 @@ test('reduced motion removes meaningful transitions', async ({ page }) => {
   expect(durations.every((value) => value.split(',').every((duration) => parseFloat(duration) <= 0.001))).toBe(true);
 });
 
-test('supporter CTA uses the live Sociobot checkout mapping', async ({ page }) => {
+test('@claim:supporter-price offers the $19 one-time supporter unlock without gating reading controls', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#checkout-link')).toHaveAttribute(
     'href',
     'https://api.sociobot.in/api/v1/products/eye-comfort-profiles/checkout'
   );
   await expect(page.getByText('$19', { exact: true })).toBeVisible();
+  await expect(page.getByText('No subscription', { exact: true })).toBeVisible();
+  await expect(page.getByText(/every comfort control.*remain free/i)).toBeVisible();
 });

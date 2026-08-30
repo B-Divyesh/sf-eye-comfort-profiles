@@ -44,12 +44,23 @@ function cssFor(input: ProfileSettings): string {
       line-height: ${settings.lineHeight} !important;
       letter-spacing: ${settings.letterSpacing}em !important;
     }
-    :where(article, main, [role="main"]) :where(p, li, blockquote, dd, dt, pre) {
+    /*
+     * Many articles set typography directly on paragraphs instead of inheriting
+     * it from body. Apply the chosen reading geometry to those prose elements
+     * as well, while leaving controls and other interactive UI untouched.
+     */
+    html body :is(article, main, [role="main"]) :is(p, li, blockquote, dd, dt, figcaption, caption, pre, code, td, th) {
+      font-family: ${fonts[settings.fontFamily]} !important;
+      font-size: ${settings.fontSize}px !important;
       max-inline-size: ${settings.lineWidth}ch !important;
       line-height: ${settings.lineHeight} !important;
       letter-spacing: ${settings.letterSpacing}em !important;
     }
-    :where(article, main, [role="main"]) :where(p, blockquote, pre) {
+    html body :is(article, main, [role="main"]) :is(h1, h2, h3, h4, h5, h6) {
+      font-family: ${fonts[settings.fontFamily]} !important;
+      letter-spacing: ${settings.letterSpacing}em !important;
+    }
+    html body :is(article, main, [role="main"]) :is(p, blockquote, pre) {
       margin-inline-end: auto !important;
     }
     ${themes[settings.theme]}

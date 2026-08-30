@@ -103,6 +103,10 @@ addition to color. Reading-preview themes use their own checked contrast pairs.
   `/opt/fleet/lib/gen-image.sh`, 2026-08-27. Original generated asset for this
   product. Source PNG and prompt sidecar retained under `assets/src/`; optimized
   WebP shipped locally. The footer discloses generated imagery.
+- Social and touch assets: `site/public/social-preview.jpg` (1200×630) and
+  `site/public/apple-touch-icon.png` (180×180) are deterministic crops of the
+  reviewed `panel-reader-hero` source, created with ImageMagick on 2026-08-30.
+  They add no new subject matter, external asset, or runtime request.
 
 All interface icons are original inline SVG line drawings using the same
 keyline language. No third-party artwork or runtime asset service is used.

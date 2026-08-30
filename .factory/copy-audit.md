@@ -111,6 +111,7 @@ present; “unlock” is used only for the literal paid license.
 - Privacy — 1
 - Terms — 1
 - Source — 1
+- Built by Param Factory · v1.0.1 · repair-5 — 6
 - Hero artwork generated for this product with Azure AI Foundry. — 10
 - No analytics or third-party scripts. — 5
 - You’re offline. — 2

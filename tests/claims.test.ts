@@ -13,6 +13,7 @@ const claims = JSON.parse(readFileSync('.factory/claims.json', 'utf8')) as Claim
 const taggedTestSources = [
   'tests/browser/site.spec.ts',
   'tests/model.test.ts',
+  'tests/license.test.ts',
   'tests/release-artifact.test.ts',
   'scripts/extension-smoke.mjs'
 ].map((path) => readFileSync(path, 'utf8')).join('\n');

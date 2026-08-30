@@ -49,7 +49,8 @@ npm run test:a11y
 `npm run build` is the release command. It produces:
 
 - `dist/site/index.html` — static deployment root
-- `dist/site/privacy/index.html` and `dist/site/terms/index.html`
+- `dist/site/privacy/index.html`, `dist/site/terms/index.html`, and a designed
+  `dist/site/404.html`
 - `dist/site/downloads/eye-comfort-profiles-chrome.zip`
 - `dist/extension/chrome-mv3/` — unpacked extension
 
@@ -81,9 +82,10 @@ exercises the popup using only keyboard controls, verifies its injected reading
 profile, and confirms a local profile update while the browser is offline.
 
 After deploying `dist/site`, run `npm run test:live`. It checks the public ZIP
-at the advertised path with `unzip -t`, immutable asset caching, response
-hardening headers, and the production Sociobot checkout redirect. Set
-`SITE_URL` to verify another static deployment target.
+at the advertised path with `unzip -t`, the designed 404 route, social/identity
+assets, immutable asset caching, response-hardening headers, and the production
+Sociobot checkout redirect. Set `SITE_URL` to verify another static deployment
+target.
 
 For production releases, use `npm run build && npm run deploy:production`.
 That command deploys the complete `dist/site` directory (including the
