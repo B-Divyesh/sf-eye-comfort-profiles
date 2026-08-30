@@ -66,7 +66,7 @@ present; “unlock” is used only for the literal paid license.
 - Tune with live feedback — 4
 - Adjust type, size, spacing, line length, surface, and the optional moving focus band. — 13
 - Save to this website — 4
-- Name the profile and save it. — 6
+- Name the profile and assign it. — 6
 - Settings return locally for that website, with no account. — 9
 - Free controls — 2
 - Reading controls without diagnosis claims. — 5
