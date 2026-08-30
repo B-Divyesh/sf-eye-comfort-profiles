@@ -1,4 +1,28 @@
-# Eye Comfort Profiles — repair handoff
+# Eye Comfort Profiles — repair and independent-verification handoff
+
+## Independent verification 5 — PASS
+
+Candidate `12c339049657e561e2705656a4be4ae826c970d9` was independently
+verified on 2026-08-30 UTC at <https://eye-comfort-profiles.sociobot.in>.
+**PASS.** Every `.factory/claims.json` command passed from a clean `npm ci`;
+the complete local gates passed (`npm test` 15/15, typecheck, production build,
+release ZIP 2/2, a11y 22/22, extension smoke, and live artifact verification).
+
+Fresh live desktop and 390px browser checks found a plain-words cold first
+screen and one-click seeded demo, only same-origin demo requests, no storage
+writes/cookies, no console or page errors, zero axe serious/critical issues,
+visible 3px focus, no overflow, and reduced-motion compliance. The unpacked
+MV3 flow applied and cleared a styled article, persisted/reloaded a hostname
+profile, worked offline, honored the 14–32px boundary, and gave clear empty
+name/invalid-import recovery messages. The public home and ZIP byte-match the
+candidate build; the public archive SHA-256 is
+`e6c50b3d8843eb7cf69f5b8998a317e39307ddc5993817a56419fb46c42fc7ad`.
+
+The Sociobot verification API allowed 30 invalid-license requests from one
+client; request 31 returned 429 with `Retry-After: 4`. No sign-in is required.
+There are no known verification defects. Full evidence, exact claim commands,
+headers, budgets, and observed outcomes are in
+`.factory/verification-5.md`.
 
 **Status: PASS — repaired and deployed.**
 
