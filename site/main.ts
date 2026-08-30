@@ -5,6 +5,7 @@ const spacing = document.querySelector<HTMLInputElement>('#demo-space');
 const width = document.querySelector<HTMLInputElement>('#demo-width');
 const preview = document.querySelector<HTMLElement>('#reading-preview');
 const surfaceControls = [...document.querySelectorAll<HTMLInputElement>('input[name="surface"]')];
+const demoMode = new URL(location.href).searchParams.get('demo') === '1';
 
 const SAMPLE = { size: '24', spacing: '1.8', width: '52', surface: 'slate' } as const;
 
@@ -35,7 +36,7 @@ function loadSample(): void {
   updatePreview();
 }
 
-if (new URL(location.href).searchParams.get('demo') === '1') {
+if (demoMode) {
   document.title = 'Demo — Eye Comfort Profiles';
   document.querySelector<HTMLElement>('#demo-banner')!.hidden = false;
   document.querySelector<HTMLButtonElement>('#reset-demo')!.addEventListener('click', loadSample);
@@ -49,14 +50,16 @@ addEventListener('offline', updateOnlineState);
 updateOnlineState();
 
 document.querySelector<HTMLAnchorElement>('#checkout-link')?.setAttribute('href', checkoutUrl());
-const licenseMessage = document.querySelector<HTMLElement>('#license-message');
-const returned = captureLicenseFromUrl();
-if (returned && licenseMessage) licenseMessage.textContent = 'License received. Open the extension to activate your supporter faceplate.';
-const cached = cachedVerdict();
-if (cached?.valid && licenseMessage) licenseMessage.textContent = 'Supporter license active in this browser.';
-verifyLicense().then((verdict) => {
-  if (!licenseMessage || !verdict) return;
-  licenseMessage.textContent = verdict.valid ? 'Supporter license active in this browser.' : 'This license is no longer active. You can purchase a new unlock above.';
-}).catch(() => {
-  if (licenseMessage && cached?.valid) licenseMessage.textContent = 'Offline — your last verified supporter unlock remains available.';
-});
+if (!demoMode) {
+  const licenseMessage = document.querySelector<HTMLElement>('#license-message');
+  const returned = captureLicenseFromUrl();
+  if (returned && licenseMessage) licenseMessage.textContent = 'License received. Open the extension to activate your supporter faceplate.';
+  const cached = cachedVerdict();
+  if (cached?.valid && licenseMessage) licenseMessage.textContent = 'Supporter license active in this browser.';
+  verifyLicense().then((verdict) => {
+    if (!licenseMessage || !verdict) return;
+    licenseMessage.textContent = verdict.valid ? 'Supporter license active in this browser.' : 'This license is no longer active. You can purchase a new unlock above.';
+  }).catch(() => {
+    if (licenseMessage && cached?.valid) licenseMessage.textContent = 'Offline — your last verified supporter unlock remains available.';
+  });
+}

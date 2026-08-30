@@ -39,9 +39,10 @@ test('home preview responds and the layout does not overflow', async ({ page }) 
   expect(overflow).toBeLessThanOrEqual(1);
 });
 
-test('@claim:sample-demo opens sample settings in one click and saves nothing', async ({ page }) => {
+test('@claim:sample-demo opens sample settings in one click and saves nothing', async ({ page, browser }) => {
   await page.goto('/');
   await page.getByRole('link', { name: 'Try it with sample data' }).click();
+  await expect(page).toHaveTitle('Demo — Eye Comfort Profiles');
   await expect(page.locator('#demo-banner')).toBeVisible();
   await expect(page.locator('#demo-size-value')).toHaveText('24 px');
   await expect(page.locator('#demo-space-value')).toHaveText('1.80×');
@@ -52,6 +53,29 @@ test('@claim:sample-demo opens sample settings in one click and saves nothing', 
   await page.locator('#demo-size').fill('28');
   await page.getByRole('button', { name: 'Reset demo' }).click();
   await expect(page.locator('#demo-size-value')).toHaveText('24 px');
+  await page.getByRole('link', { name: 'Leave demo' }).click();
+  await expect(page).toHaveURL('/');
+
+  const isolatedContext = await browser.newContext();
+  await isolatedContext.addInitScript(() => {
+    localStorage.setItem('sb_license:eye-comfort-profiles', 'real-license-token');
+    localStorage.setItem('sb_license:eye-comfort-profiles:verdict', JSON.stringify({ valid: true, checkedAt: 1 }));
+  });
+  const isolatedPage = await isolatedContext.newPage();
+  const demoRequests: string[] = [];
+  isolatedPage.on('request', (request) => demoRequests.push(request.url()));
+  await isolatedPage.goto('/?demo=1#controls');
+  await expect(isolatedPage.locator('#demo-banner')).toBeVisible();
+  await expect(isolatedPage.locator('#license-message')).toBeEmpty();
+  expect(await isolatedPage.evaluate(() => ({
+    token: localStorage.getItem('sb_license:eye-comfort-profiles'),
+    verdict: localStorage.getItem('sb_license:eye-comfort-profiles:verdict')
+  }))).toEqual({
+    token: 'real-license-token',
+    verdict: JSON.stringify({ valid: true, checkedAt: 1 })
+  });
+  expect(demoRequests.every((url) => new URL(url).origin === 'http://127.0.0.1:4173')).toBe(true);
+  await isolatedContext.close();
 });
 
 test('demo notice and its reset actions remain visible after a 390px reader scroll', async ({ page }) => {
@@ -65,7 +89,7 @@ test('demo notice and its reset actions remain visible after a 390px reader scro
   expect(banner!.y).toBeGreaterThanOrEqual(0);
   expect(banner!.y + banner!.height).toBeLessThanOrEqual(viewport!.height);
   await expect(page.getByRole('button', { name: 'Reset demo' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Start for real' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Leave demo' })).toBeVisible();
 });
 
 test('@claim:first-party-site sends no third-party runtime requests', async ({ page }) => {
@@ -73,7 +97,7 @@ test('@claim:first-party-site sends no third-party runtime requests', async ({ p
   page.on('request', (request) => origins.add(new URL(request.url()).origin));
   await page.goto('/?demo=1');
   await page.locator('#demo-size').fill('26');
-  await page.getByLabel('High').check();
+  await page.getByLabel('High contrast').check();
   expect([...origins]).toEqual(['http://127.0.0.1:4173']);
 });
 
@@ -111,4 +135,10 @@ test('@claim:supporter-price offers the $19 one-time supporter unlock without ga
   await expect(page.getByText('$19', { exact: true })).toBeVisible();
   await expect(page.getByText('No subscription', { exact: true })).toBeVisible();
   await expect(page.getByText(/every comfort control.*remain free/i)).toBeVisible();
+});
+
+test('@claim:comfort-not-medical-advice states the extension medical boundary plainly', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Comfort settings, not medical advice.' })).toBeVisible();
+  await expect(page.locator('.care-note p').last()).toContainText('It does not test, diagnose, prevent, or treat any eye condition.');
 });

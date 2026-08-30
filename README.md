@@ -1,9 +1,8 @@
 # Eye Comfort Profiles
 
-Eye Comfort Profiles is a Chromium browser extension for people who repeatedly
-adjust text size, line length, spacing, contrast, or focus aids on different
-sites. It saves named reading profiles locally and reapplies the selected
-profile when the reader returns to a hostname.
+Eye Comfort Profiles is a Chromium extension for people who adjust reading
+settings on different websites. It saves text size, spacing, contrast, and
+focus settings for each one.
 
 It is a comfort utility, not a vision test or medical treatment. The product
 does not prescribe one “accessible” font and does not send browsing history or
@@ -20,10 +19,9 @@ realistic reading setup, saves nothing, and resets in one click.
 - Named profiles with font fallback, 14–32px text, line height, letter spacing,
   36–96 character line width, and four reading surfaces
 - Optional pointer- and keyboard-focus-following reading band
-- Explicit per-hostname assignment; regular pages are never changed until a
-  reader chooses a profile
+- Explicit website-address assignment; pages stay unchanged until a reader
+  saves a profile
 - Local JSON backup and restore
-- Restricted-page, empty, storage-error, and offline-license states
 - Optional $19 one-time supporter purchase for decorative faceplates; every
   reading and backup feature remains free
 - Static product site, privacy policy, and terms
@@ -73,35 +71,30 @@ npm run test:a11y
 npx vite --config vite.site.config.ts --host 127.0.0.1
 ```
 
-Then inspect the site, `/privacy/`, and `/terms/`; load the unpacked extension;
-and test assignment, removal, focus band, backup import/export, keyboard focus,
-and a restricted browser page.
+Inspect the site, Privacy, and Terms pages. Then test assignment, removal, the
+focus band, backup, keyboard focus, and a restricted page.
 
-`npm run test:extension` loads the production unpacked MV3 artifact in Chromium,
-exercises the popup using only keyboard controls, verifies its injected reading
-profile, and confirms a local profile update while the browser is offline.
+`npm run test:extension` tests the unpacked Chromium extension with keyboard
+controls. It also checks profile application and an offline local update.
 
-After deploying `dist/site`, run `npm run test:live`. It checks the public ZIP
-at the advertised path with `unzip -t`, the designed 404 route, social/identity
-assets, immutable asset caching, response-hardening headers, and the production
-Sociobot checkout redirect. Set `SITE_URL` to verify another static deployment
-target.
+After deploying `dist/site`, run `npm run test:live`. It checks the public
+extension ZIP and the 404 page. It also checks identity assets, caching,
+security headers, and the Sociobot checkout redirect. Set `SITE_URL` to verify
+another static deployment target.
 
 For production releases, use `npm run build && npm run deploy:production`.
-That command deploys the complete `dist/site` directory (including the
-advertised `/downloads/` archive) and fails unless the public ZIP is a valid
-Eye Comfort Profiles Manifest V3 package.
+The command deploys `dist/site`, including the extension ZIP. It then checks
+that the public ZIP is a valid Chromium Manifest V3 package.
 
-The build uses no third-party runtime scripts, web fonts, analytics, or paid
-service other than the optional Sociobot-hosted checkout and license verify
-request. Production builds use `api.sociobot.in`.
+The build has no third-party scripts, web fonts, or analytics. An optional
+Sociobot checkout and license check are the only paid-service calls.
+Production builds use `api.sociobot.in`.
 
 ## Privacy and permissions
 
 `storage` holds the local profile document. `activeTab` identifies the page the
-reader is actively configuring. Host access is required for the content script
-that applies CSS on HTTP and HTTPS pages. Matching uses hostname only and no
-browser history is collected.
+reader is actively configuring. Matching uses the website address only. The
+extension does not collect browser history.
 
 See [the privacy policy](site/privacy/index.html) and
 [terms](site/terms/index.html).

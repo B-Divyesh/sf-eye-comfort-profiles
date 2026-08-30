@@ -9,13 +9,14 @@ present; “unlock” is used only for the literal paid license.
 
 - Skip to main content — 4
 - Eye Comfort Profiles — 3
+- Demo — 1
 - How it works — 3
 - Controls — 1
-- Supporter — 1
+- Privacy — 1
 - Download v1.0 — 2
 - Demo — sample data, nothing is saved. — 6
 - Reset demo — 2
-- Start for real — 3
+- Leave demo — 2
 - Reading profiles for Chromium — 4
 - Save reading settings for each site. — 6
 - For readers with eye strain or low vision, it restores the text size, spacing, contrast, and focus aid they choose. — 20
@@ -30,7 +31,7 @@ present; “unlock” is used only for the literal paid license.
 
 ## Problem and preview
 
-- Stop repeating the same adjustments. — 5
+- Save one reading profile for each website. — 7
 - Zoom changed again — 3
 - Lines run too wide — 4
 - Theme lost on return — 4
@@ -47,13 +48,13 @@ present; “unlock” is used only for the literal paid license.
 - Reading surface — 2
 - Paper — 1
 - Slate — 1
-- High — 1
+- High contrast — 2
 - Live reading sample — 3
-- A layout that returns with you — 6
+- Preview saved reading settings. — 4
 - Comfort can depend on the page, the hour, and the kind of reading. — 13
 - A narrow article may need generous spacing; a reference page may work better with compact lines. — 16
 - Move these controls to test the geometry. — 7
-- The extension remembers the full combination for each hostname. — 9
+- The extension remembers the full combination for each website address. — 10
 
 ## How it works and free controls
 
@@ -61,30 +62,29 @@ present; “unlock” is used only for the literal paid license.
 - Save a profile in three steps. — 6
 - Open a page — 3
 - Select the extension on any regular website. — 7
-- Protected browser pages remain untouched. — 5
+- Browser-protected pages stay unchanged. — 4
 - Tune with live feedback — 4
 - Adjust type, size, spacing, line length, surface, and the optional moving focus band. — 13
 - Save to the site — 4
 - Name the profile and assign it. — 6
-- Settings return locally on every visit, with no account. — 9
+- Settings return locally for that website address, with no account. — 10
 - Free controls — 2
 - Reading controls without diagnosis claims. — 5
-- Four honest font stacks — 4
-- System, humanist, serif, or mono fallbacks—never a claim that one face works for everyone. — 15
-- Reading geometry — 2
-- Set 36–96 character lines, leading, letter spacing, and text size independently. — 12
+- Choose from four font styles. — 5
+- Choose system sans, rounded sans, serif, or monospaced text. — 9
+- Text size, spacing, and line length. — 7
+- Set 36–96 character lines, line spacing, letter spacing, and text size independently. — 13
 - Optional focus band — 3
 - A translucent guide follows your pointer or keyboard focus without capturing clicks. — 12
 - Local by design — 3
-- Only your profile settings and hostname assignments are stored. — 9
+- Only your profile settings and website address assignments are stored. — 10
 - Export or import them anytime. — 5
 
 ## Installation, supporter option, boundary, and footer
 
 - Manual install for Chromium — 4
 - Install this Chromium build. — 4
-- Chrome Web Store review comes later. — 6
-- This factory build installs in developer mode and can be removed at any time. — 14
+- Use the steps here to load this download in Chromium. — 10
 - Download and unzip — 3
 - Save the package somewhere permanent. — 5
 - Open Extensions — 2
@@ -101,7 +101,7 @@ present; “unlock” is used only for the literal paid license.
 - Buy supporter unlock — 3
 - Secure hosted checkout. — 3
 - Sociobot/Dodo is the merchant of record; refunds are handled there and revoke the license. — 15
-- A clear boundary — 3
+- What this extension does not do — 6
 - Comfort settings, not medical advice. — 5
 - Eye Comfort Profiles changes presentation only. — 6
 - It does not test, diagnose, prevent, or treat any eye condition. — 11
@@ -111,7 +111,7 @@ present; “unlock” is used only for the literal paid license.
 - Privacy — 1
 - Terms — 1
 - Source — 1
-- Built by Param Factory · v1.0.1 · repair-5 — 6
+- Built by Param Factory · v1.0.1 · polish-1 — 6
 - Hero artwork generated for this product with Azure AI Foundry. — 10
 - No analytics or third-party scripts. — 5
 - You’re offline. — 2
@@ -122,7 +122,7 @@ present; “unlock” is used only for the literal paid license.
 | Concept | Product word |
 | --- | --- |
 | A named group of reading settings | profile |
-| Website match key | hostname |
+| Website match key | website address |
 | Text and layout adjustments | reading controls |
 | Horizontal reading guide | focus band |
 | Page color pairing | reading surface |

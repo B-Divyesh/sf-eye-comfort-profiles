@@ -43,17 +43,38 @@
   },
   {
     "id": "site-profile-reload",
-    "claim": "A saved profile returns for its hostname on the next visit.",
+    "claim": "A saved profile returns for its website address on the next visit.",
     "where": "landing first screen, how-it-works section, and README",
     "test": "npm run test:extension -- --claim=@claim:site-profile-reload",
-    "sandbox": "fresh unpacked extension profile and local hostname; save settings, reload the article, and assert the saved presentation is reapplied"
+    "sandbox": "fresh unpacked extension profile and local website address; save settings, reload the article, and assert the saved presentation is reapplied"
+  },
+  {
+    "id": "protected-pages-unchanged",
+    "claim": "Browser-protected pages stay unchanged.",
+    "where": "landing page how-it-works section and terms",
+    "test": "npm run test:extension -- --claim=@claim:protected-pages-unchanged",
+    "sandbox": "fresh unpacked extension; open chrome://settings and assert neither the injected reading style nor focus band exists"
+  },
+  {
+    "id": "focus-band-behavior",
+    "claim": "The optional focus band follows a pointer or keyboard focus without capturing clicks.",
+    "where": "landing page free controls section and extension popup",
+    "test": "npm run test:extension -- --claim=@claim:focus-band-behavior",
+    "sandbox": "fresh unpacked extension and local article; enable the band, move the pointer, focus a button, and click that button through the band"
+  },
+  {
+    "id": "unassigned-pages-unchanged",
+    "claim": "A regular website stays unchanged until a reader saves a profile for its website address.",
+    "where": "README and extension behavior",
+    "test": "npm run test:extension -- --claim=@claim:unassigned-pages-unchanged",
+    "sandbox": "fresh unpacked extension and local article with its own typography; assert no extension style or focus band exists before assignment"
   },
   {
     "id": "backup-roundtrip",
     "claim": "Profiles and site assignments export to and restore from a portable JSON backup.",
     "where": "landing features, extension popup, privacy page, and README",
     "test": "npx vitest run tests/model.test.ts -t @claim:backup-roundtrip",
-    "sandbox": "sample named profile and hostname assignment; export JSON, import it, and assert exact normalized state equality"
+    "sandbox": "sample named profile and website-address assignment; export JSON, import it, and assert exact normalized state equality"
   },
   {
     "id": "supporter-price",
@@ -61,6 +82,13 @@
     "where": "landing supporter section, extension popup, terms, and README",
     "test": "npm run test:a11y -- --grep @claim:supporter-price",
     "sandbox": "local landing page; assert the exact $19 and no-subscription copy, Sociobot checkout mapping, and free-control statement"
+  },
+  {
+    "id": "comfort-not-medical-advice",
+    "claim": "Eye Comfort Profiles changes presentation only and does not test, diagnose, prevent, or treat eye conditions.",
+    "where": "landing page medical boundary and terms",
+    "test": "npm run test:a11y -- --grep @claim:comfort-not-medical-advice",
+    "sandbox": "fresh landing-page browser context; assert the visible medical-boundary heading and exact scope statement"
   },
   {
     "id": "supporter-faceplates",

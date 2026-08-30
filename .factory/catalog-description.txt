@@ -1,0 +1,1 @@
+Save reading settings for each website in Chromium.

@@ -14,9 +14,12 @@ const claimTags = [
   '@claim:local-profile-privacy',
   '@claim:offline-profile',
   '@claim:site-profile-reload',
-  '@claim:supporter-faceplates'
+  '@claim:supporter-faceplates',
+  '@claim:protected-pages-unchanged',
+  '@claim:focus-band-behavior',
+  '@claim:unassigned-pages-unchanged'
 ];
-const [freeReadingControlsClaim, localProfilePrivacyClaim, offlineProfileClaim, siteProfileReloadClaim, supporterFaceplatesClaim] = claimTags;
+const [freeReadingControlsClaim, localProfilePrivacyClaim, offlineProfileClaim, siteProfileReloadClaim, supporterFaceplatesClaim, protectedPagesUnchangedClaim, focusBandBehaviorClaim, unassignedPagesUnchangedClaim] = claimTags;
 
 const requestedClaim = process.argv.find((argument) => argument.startsWith('--claim='))?.slice('--claim='.length);
 if (requestedClaim && !claimTags.includes(requestedClaim)) {
@@ -53,6 +56,17 @@ try {
   });
   const requests = [];
   context.on('request', (request) => requests.push(request.url()));
+  const protectedPage = await context.newPage();
+  await protectedPage.goto('chrome://settings/');
+  await protectedPage.waitForTimeout(150);
+  const protectedPageUnchanged = await protectedPage.evaluate(() => ({
+    profileStyle: Boolean(document.getElementById('eye-comfort-profiles-style')),
+    focusBand: Boolean(document.getElementById('eye-comfort-profiles-band'))
+  }));
+  await protectedPage.close();
+  if (runsClaim(protectedPagesUnchangedClaim) && (protectedPageUnchanged.profileStyle || protectedPageUnchanged.focusBand)) {
+    throw new Error(`A browser-protected page was changed: ${JSON.stringify(protectedPageUnchanged)}`);
+  }
   const article = await context.newPage();
   const consoleErrors = [];
   article.on('console', (message) => { if (message.type() === 'error') consoleErrors.push(message.text()); });
@@ -65,6 +79,9 @@ try {
   }));
   if (untouched.fontSize !== '16px' || untouched.paragraphFontSize !== '15px' || untouched.profileStyle || untouched.focusBand) {
     throw new Error(`The page changed before explicit profile assignment: ${JSON.stringify(untouched)}`);
+  }
+  if (runsClaim(unassignedPagesUnchangedClaim) && (untouched.profileStyle || untouched.focusBand || untouched.paragraphFontSize !== '15px')) {
+    throw new Error(`An unassigned regular page was changed: ${JSON.stringify(untouched)}`);
   }
 
   const extensions = await context.newPage();
@@ -133,6 +150,48 @@ try {
     throw new Error(`Profile did not apply its keyboard-selected bounds: ${JSON.stringify(applied)}`);
   }
 
+  let focusBandBehavior = 'not selected';
+  if (runsClaim(focusBandBehaviorClaim)) {
+    const pointerY = 250;
+    await article.mouse.move(20, pointerY);
+    await article.waitForTimeout(200);
+    const pointerTop = await article.locator('#eye-comfort-profiles-band').evaluate((band) => band.getBoundingClientRect().top);
+    if (Math.abs(pointerTop - (pointerY - 90)) >= 3) {
+      throw new Error(`Focus band did not follow the pointer: top=${pointerTop}`);
+    }
+    await article.locator('h1').evaluate((heading) => {
+      heading.setAttribute('tabindex', '-1');
+      heading.focus();
+    });
+    await article.locator('#reader-button').focus();
+    await article.waitForTimeout(200);
+    const keyboardPosition = await article.evaluate(() => {
+      const band = document.getElementById('eye-comfort-profiles-band');
+      const button = document.getElementById('reader-button');
+      if (!band || !button) return null;
+      const bandCenter = band.getBoundingClientRect().top + band.getBoundingClientRect().height / 2;
+      const buttonRect = button.getBoundingClientRect();
+      return { bandCenter, buttonCenter: buttonRect.top + buttonRect.height / 2 };
+    });
+    if (!keyboardPosition || Math.abs(keyboardPosition.bandCenter - keyboardPosition.buttonCenter) >= 3) {
+      throw new Error(`Focus band did not follow keyboard focus: ${JSON.stringify(keyboardPosition)}`);
+    }
+    await article.evaluate(() => {
+      const button = document.querySelector('#reader-button');
+      button?.setAttribute('data-clicks', '0');
+      button?.addEventListener('click', () => {
+        button.setAttribute('data-clicks', String(Number(button.getAttribute('data-clicks')) + 1));
+      }, { once: true });
+    });
+    await article.locator('#reader-button').click();
+    const clickCount = Number(await article.locator('#reader-button').getAttribute('data-clicks'));
+    const pointerEvents = await article.locator('#eye-comfort-profiles-band').evaluate((band) => getComputedStyle(band).pointerEvents);
+    if (clickCount !== 1 || pointerEvents !== 'none') {
+      throw new Error(`Focus band did not allow a click through: clicks=${clickCount}, pointer-events=${pointerEvents}`);
+    }
+    focusBandBehavior = 'pointer and keyboard focus moved the transparent click-through band';
+  }
+
   let supporterFaceplates = 'not selected';
   if (requestedClaim === supporterFaceplatesClaim) {
     const token = 'returned-supporter-token';
@@ -195,6 +254,8 @@ try {
     extensionId,
     untouched,
     applied,
+    protectedPageUnchanged,
+    focusBandBehavior,
     supporterFaceplates,
     offlineUpdate,
     reload,

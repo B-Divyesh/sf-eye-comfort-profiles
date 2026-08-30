@@ -30,16 +30,17 @@
     <header class="site-header">
       <a class="wordmark" href="/" aria-label="Eye Comfort Profiles home"><span class="mini-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Eye Comfort Profiles</span></a>
       <nav aria-label="Primary navigation">
+        <a href="/?demo=1#controls">Demo</a>
         <a href="#how">How it works</a>
         <a href="#controls">Controls</a>
-        <a href="#supporter">Supporter</a>
+        <a href="/privacy/">Privacy</a>
       </nav>
       <a class="header-download" href="/downloads/eye-comfort-profiles-chrome.zip" download>Download v1.0</a>
     </header>
 
     <aside class="demo-banner" id="demo-banner" aria-label="Sample data notice" hidden>
       <p><strong>Demo — sample data, nothing is saved.</strong></p>
-      <div><button id="reset-demo" type="button">Reset demo</button><a href="/">Start for real</a></div>
+      <div><button id="reset-demo" type="button">Reset demo</button><a href="/">Leave demo</a></div>
     </aside>
 
     <main id="main">
@@ -65,7 +66,7 @@
       </section>
 
       <section class="problem-strip" aria-label="The problem this solves">
-        <p>Stop repeating the same adjustments.</p>
+        <p>Save one reading profile for each website.</p>
         <ul>
           <li>Zoom changed again</li>
           <li>Lines run too wide</li>
@@ -92,15 +93,15 @@
               <div class="surface-options">
                 <label><input type="radio" name="surface" value="paper" checked /><span>Paper</span></label>
                 <label><input type="radio" name="surface" value="slate" /><span>Slate</span></label>
-                <label><input type="radio" name="surface" value="contrast" /><span>High</span></label>
+                <label><input type="radio" name="surface" value="contrast" /><span>High contrast</span></label>
               </div>
             </fieldset>
           </div>
           <article class="reading-preview" id="reading-preview" aria-label="Live readability preview">
             <p class="preview-label">Live reading sample</p>
-            <h3>A layout that returns with you</h3>
+            <h3>Preview saved reading settings.</h3>
             <p>Comfort can depend on the page, the hour, and the kind of reading. A narrow article may need generous spacing; a reference page may work better with compact lines.</p>
-            <p>Move these controls to test the geometry. The extension remembers the full combination for each hostname.</p>
+            <p>Move these controls to test the geometry. The extension remembers the full combination for each website address.</p>
             <div class="focus-sample" aria-hidden="true"></div>
           </article>
         </div>
@@ -112,9 +113,9 @@
           <h2 id="how-title">Save a profile in three steps.</h2>
         </div>
         <ol class="steps">
-          <li><span class="step-dial">1</span><div><h3>Open a page</h3><p>Select the extension on any regular website. Protected browser pages remain untouched.</p></div></li>
+          <li><span class="step-dial">1</span><div><h3>Open a page</h3><p>Select the extension on a regular website. Browser-protected pages stay unchanged.</p></div></li>
           <li><span class="step-dial">2</span><div><h3>Tune with live feedback</h3><p>Adjust type, size, spacing, line length, surface, and the optional moving focus band.</p></div></li>
-          <li><span class="step-dial">3</span><div><h3>Save to the site</h3><p>Name the profile and assign it. Settings return locally on every visit, with no account.</p></div></li>
+          <li><span class="step-dial">3</span><div><h3>Save to the site</h3><p>Name the profile and assign it. Settings return locally for that website address, with no account.</p></div></li>
         </ol>
       </section>
 
@@ -122,10 +123,10 @@
         <p class="section-number">Free controls</p>
         <h2 id="features-title">Reading controls without diagnosis claims.</h2>
         <div class="feature-grid">
-          <article><span aria-hidden="true">Aa</span><h3>Four honest font stacks</h3><p>System, humanist, serif, or mono fallbacks—never a claim that one face works for everyone.</p></article>
-          <article><span aria-hidden="true">↔</span><h3>Reading geometry</h3><p>Set 36–96 character lines, leading, letter spacing, and text size independently.</p></article>
+          <article><span aria-hidden="true">Aa</span><h3>Choose from four font styles.</h3><p>Choose system sans, rounded sans, serif, or monospaced text.</p></article>
+          <article><span aria-hidden="true">↔</span><h3>Text size, spacing, and line length.</h3><p>Set 36–96 character lines, line spacing, letter spacing, and text size independently.</p></article>
           <article><span aria-hidden="true">▰</span><h3>Optional focus band</h3><p>A translucent guide follows your pointer or keyboard focus without capturing clicks.</p></article>
-          <article><span aria-hidden="true">⌂</span><h3>Local by design</h3><p>Only your profile settings and hostname assignments are stored. Export or import them anytime.</p></article>
+          <article><span aria-hidden="true">⌂</span><h3>Local by design</h3><p>Only your profile settings and website address assignments are stored. Export or import them anytime.</p></article>
         </div>
       </section>
 
@@ -133,7 +134,7 @@
         <div>
           <p class="section-number">Manual install for Chromium</p>
           <h2 id="install-title">Install this Chromium build.</h2>
-          <p>Chrome Web Store review comes later. This factory build installs in developer mode and can be removed at any time.</p>
+          <p>Use the steps here to load this download in Chromium.</p>
         </div>
         <ol>
           <li><strong>Download and unzip</strong><span>Save the package somewhere permanent.</span></li>
@@ -157,7 +158,7 @@
       </section>
 
       <section class="care-note" aria-labelledby="care-title">
-        <p class="section-number">A clear boundary</p>
+        <p class="section-number">What this extension does not do</p>
         <h2 id="care-title">Comfort settings, not medical advice.</h2>
         <p>Eye Comfort Profiles changes presentation only. It does not test, diagnose, prevent, or treat any eye condition. Persistent pain or vision changes deserve advice from a qualified eye-care professional.</p>
       </section>
@@ -167,7 +168,7 @@
       <div class="wordmark"><span class="mini-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Eye Comfort Profiles</span></div>
       <p>Save the reading settings that work for you.</p>
       <nav aria-label="Legal"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-eye-comfort-profiles">Source</a></nav>
-      <p class="build-identity">Built by Param Factory · v1.0.1 · repair-5</p>
+      <p class="build-identity">Built by Param Factory · v1.0.1 · polish-1</p>
       <p class="asset-note">Hero artwork generated for this product with Azure AI Foundry. No analytics or third-party scripts.</p>
     </footer>
     <div class="offline-banner" id="offline-banner" role="status" hidden>You’re offline. The download may be unavailable, but installed profiles keep working.</div>
