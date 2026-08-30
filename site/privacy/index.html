@@ -26,26 +26,28 @@
     <a class="skip-link" href="#main">Skip to main content</a>
     <header class="site-header">
       <a class="wordmark" href="/" aria-label="Eye Comfort Profiles home"><span class="mini-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Eye Comfort Profiles</span></a>
-      <nav aria-label="Primary navigation"><a href="/#how">How it works</a><a href="/#controls">Controls</a><a href="/#supporter">Supporter</a></nav>
+      <nav aria-label="Primary navigation"><a href="/?demo=1#controls">Demo</a><a href="/#how">How it works</a><a href="/#controls">Controls</a><a href="/privacy/" aria-current="page">Privacy</a></nav>
       <a class="header-download" href="/downloads/eye-comfort-profiles-chrome.zip" download>Download v1.0</a>
     </header>
     <main id="main" class="legal-main">
       <p class="updated">Effective 27 August 2026</p>
-      <h1>Privacy</h1>
+      <h1 tabindex="-1">Privacy</h1>
       <p>Eye Comfort Profiles is local-first. The extension does not operate an account system, record your reading, send browsing history to us, or include analytics, advertising, cookies, or third-party runtime scripts.</p>
       <h2>What stays on your device</h2>
-      <p>The extension stores named profiles, typography and layout values, and website-address assignments in the browser’s local extension storage. A website address is saved only when you choose “Save to this site.” Your exported backup is created locally and saved wherever you direct your browser.</p>
+      <p>The extension stores named profiles, typography and layout values, and website selections in the browser’s local extension storage. A website is saved only when you choose “Save to this website.” Your exported backup is created locally and saved wherever you direct your browser.</p>
       <h2>Page access</h2>
-      <p>The extension applies saved profiles only on regular websites. It uses the website address for matching and changes presentation with CSS. It does not transmit page content, URLs, or browsing activity to us.</p>
+      <p>The extension applies saved profiles only on regular websites. It uses the website for matching and changes presentation with CSS. It does not transmit page content, URLs, or browsing activity to us.</p>
       <h2>Purchases and licenses</h2>
-      <p>If you buy the optional supporter unlock, checkout is provided by the Sociobot billing API with Dodo as merchant of record. The extension sends the license token to the Sociobot verification endpoint at most once per day. We do not receive card details. A cached license verdict and the token are stored locally so the free experience never waits on verification.</p>
+      <p>If you buy the optional supporter unlock, checkout opens through Sociobot. The extension sends the license token to Sociobot at most once per day. A cached license verdict and token are stored locally, so reading controls never wait for verification.</p>
       <h2>Website data</h2>
       <p>This site sets no analytics cookies and includes no tracking pixels. Standard hosting logs may temporarily contain IP address, user agent, request path, and timestamp for security and reliability.</p>
       <h2>Your control</h2>
-      <p>Delete profiles in the extension, remove site assignments, clear extension storage, or uninstall the extension at any time. Uninstalling removes its local data. You can also export a portable JSON backup before doing so.</p>
+      <p>Delete profiles in the extension, remove website selections, clear extension storage, or uninstall the extension at any time. Uninstalling removes its local data. You can also export a portable JSON backup before doing so.</p>
       <h2>Contact</h2>
       <p>For privacy questions, open an issue in the project’s <a href="https://github.com/B-Divyesh/sf-eye-comfort-profiles">public source repository</a>.</p>
     </main>
-    <footer><div class="wordmark"><span class="mini-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Eye Comfort Profiles</span></div><p>Local reading profiles.</p><nav aria-label="Legal"><a href="/privacy/" aria-current="page">Privacy</a><a href="/terms/">Terms</a><a href="/">Home</a></nav><p class="build-identity">Built by Param Factory · v1.0.1 · polish-1</p></footer>
+    <footer><div class="wordmark"><span class="mini-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Eye Comfort Profiles</span></div><p>Local reading profiles.</p><nav aria-label="Legal"><a href="/privacy/" aria-current="page">Privacy</a><a href="/terms/">Terms</a><a href="/">Home</a></nav><p class="build-identity">Built by Param Factory · v1.0.2 · polish-2</p></footer>
+    <div class="route-announcer" id="route-announcer" aria-live="polite" aria-atomic="true"></div>
+    <script type="module" src="/route-focus.ts"></script>
   </body>
 </html>

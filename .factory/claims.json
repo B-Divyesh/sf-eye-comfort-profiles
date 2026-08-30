@@ -28,6 +28,13 @@
     "sandbox": "fresh unpacked extension profile with no license; use keyboard controls, assign a profile, and assert the page presentation changes"
   },
   {
+    "id": "four-font-styles",
+    "claim": "Profiles offer four font styles: system sans, rounded sans, serif, and monospaced text.",
+    "where": "landing page free controls section and README",
+    "test": "npm run test:extension -- --claim=@claim:four-font-styles",
+    "sandbox": "fresh unpacked extension and local article; inspect the four named local choices, then assign the profile and assert that its selected font style reaches the article"
+  },
+  {
     "id": "local-profile-privacy",
     "claim": "Profile use does not send page content or browsing activity to an external service.",
     "where": "landing facts, privacy page, and README",
@@ -106,9 +113,16 @@
   },
   {
     "id": "refund-revocation",
-    "claim": "A verification response for a refunded license makes its decorative unlock inactive.",
+    "claim": "A refunded supporter license no longer unlocks faceplates.",
     "where": "terms and supporter purchase note",
     "test": "npx vitest run tests/license.test.ts -t @claim:refund-revocation",
     "sandbox": "memory-backed browser storage and recorded Sociobot revoked-license response; assert the cached verdict is inactive"
+  },
+  {
+    "id": "license-restore",
+    "claim": "A supporter can restore a valid faceplate license by pasting its token on another device.",
+    "where": "terms and extension supporter options",
+    "test": "npm run test:extension -- --claim=@claim:license-restore",
+    "sandbox": "fresh unpacked extension; paste a fixture token, intercept its valid Sociobot verification response, and assert that the three faceplates appear"
   }
 ]

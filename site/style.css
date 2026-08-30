@@ -24,6 +24,7 @@ button, .button, input[type="range"] { min-height: 44px; }
 :focus-visible { outline: 3px solid var(--signal-dark); outline-offset: 3px; }
 .skip-link { position: fixed; z-index: 100; left: 16px; top: 12px; transform: translateY(-150%); padding: 10px 14px; background: var(--ink); color: white; }
 .skip-link:focus { transform: none; }
+.route-announcer { position: fixed; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
 
 .site-header { width: min(1240px, calc(100% - 40px)); min-height: 78px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 32px; border-bottom: 2px solid var(--ink); }
 .wordmark { min-height: 44px; display: inline-flex; align-items: center; gap: 11px; color: var(--ink); font-size: 15px; font-weight: 850; text-decoration: none; letter-spacing: -.01em; }

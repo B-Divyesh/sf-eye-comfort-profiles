@@ -95,7 +95,7 @@ function paintAssignment(): void {
   const isSelected = assigned === selectedId;
   assignmentState.textContent = assigned ? (isSelected ? 'Applied' : 'Another profile') : 'Not assigned';
   assignmentState.dataset.active = String(Boolean(assigned));
-  byId<HTMLButtonElement>('assign').textContent = isSelected ? 'Saved to this site' : 'Save to this site';
+  byId<HTMLButtonElement>('assign').textContent = isSelected ? 'Saved to this website' : 'Save to this website';
   byId<HTMLButtonElement>('clear').hidden = !assigned;
   byId<HTMLElement>('status-lamp').dataset.active = String(Boolean(assigned));
 }
@@ -232,7 +232,7 @@ byId<HTMLButtonElement>('new-profile').addEventListener('click', async () => {
 });
 
 byId<HTMLButtonElement>('delete-profile').addEventListener('click', () => {
-  byId<HTMLElement>('delete-copy').textContent = `“${currentProfile().name}” and its site assignments will be removed.`;
+  byId<HTMLElement>('delete-copy').textContent = `“${currentProfile().name}” and its website selections will be removed.`;
   dialog.showModal();
 });
 byId<HTMLButtonElement>('cancel-delete').addEventListener('click', () => dialog.close());

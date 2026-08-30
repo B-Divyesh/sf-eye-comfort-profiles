@@ -4,9 +4,8 @@ Eye Comfort Profiles is a Chromium extension for people who adjust reading
 settings on different websites. It saves text size, spacing, contrast, and
 focus settings for each one.
 
-It is a comfort utility, not a vision test or medical treatment. The product
-does not prescribe one “accessible” font and does not send browsing history or
-page content anywhere.
+It is a comfort utility, not a vision test or medical treatment. Choose from
+four font styles. It does not send browsing history or page content anywhere.
 
 Live site: <https://eye-comfort-profiles.sociobot.in>
 
@@ -16,12 +15,11 @@ realistic reading setup, saves nothing, and resets in one click.
 
 ## What is included
 
-- Named profiles with font fallback, 14–32px text, line height, letter spacing,
-  36–96 character line width, and four reading surfaces
-- Optional pointer- and keyboard-focus-following reading band
-- Explicit website-address assignment; pages stay unchanged until a reader
-  saves a profile
-- Local JSON backup and restore
+- Named profiles with four font styles, 14–32px text, line spacing, letter
+  spacing, 36–96-character lines, and four reading surfaces
+- An optional focus band follows the pointer or keyboard focus
+- Save a profile for a website. Other websites stay unchanged.
+- Export and restore a backup file
 - Optional $19 one-time supporter purchase for decorative faceplates; every
   reading and backup feature remains free
 - Static product site, privacy policy, and terms
@@ -93,7 +91,7 @@ Production builds use `api.sociobot.in`.
 ## Privacy and permissions
 
 `storage` holds the local profile document. `activeTab` identifies the page the
-reader is actively configuring. Matching uses the website address only. The
+reader is actively configuring. Matching uses the website only. The
 extension does not collect browser history.
 
 See [the privacy policy](site/privacy/index.html) and

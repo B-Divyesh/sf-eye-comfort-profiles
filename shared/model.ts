@@ -3,13 +3,13 @@ export const STORAGE_KEY = 'eyeComfortState';
 
 export const FONT_OPTIONS = {
   system: 'System sans',
-  humanist: 'Humanist sans',
+  humanist: 'Rounded sans',
   serif: 'Book serif',
   mono: 'Readable mono'
 } as const;
 
 export const THEME_OPTIONS = {
-  original: 'Keep site colors',
+  original: 'Keep website colors',
   paper: 'Warm paper',
   slate: 'Night slate',
   contrast: 'High contrast'

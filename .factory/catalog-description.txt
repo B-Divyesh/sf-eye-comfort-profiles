@@ -1,1 +1,1 @@
-Save reading settings for each website in Chromium.
+Save comfortable reading settings for each website in Chromium.

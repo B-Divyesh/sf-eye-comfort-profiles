@@ -1,6 +1,6 @@
 # Landing-page copy audit
 
-Audited source: `site/index.html` on 2026-08-30. Counts treat hyphenated
+Audited source: `site/index.html` and `README.md` on 2026-08-30. Counts treat hyphenated
 terms, URLs, version numbers, and numeric readouts as one word. Symbols used
 only as artwork are excluded. No sentence exceeds 22 words. No banned word is
 present; “unlock” is used only for the literal paid license.
@@ -18,7 +18,7 @@ present; “unlock” is used only for the literal paid license.
 - Reset demo — 2
 - Leave demo — 2
 - Reading profiles for Chromium — 4
-- Save reading settings for each site. — 6
+- Save reading settings for each website. — 6
 - For readers with eye strain or low vision, it restores the text size, spacing, contrast, and focus aid they choose. — 20
 - Try it with sample data — 5
 - Download for Chromium — 3
@@ -54,7 +54,7 @@ present; “unlock” is used only for the literal paid license.
 - Comfort can depend on the page, the hour, and the kind of reading. — 13
 - A narrow article may need generous spacing; a reference page may work better with compact lines. — 16
 - Move these controls to test the geometry. — 7
-- The extension remembers the full combination for each website address. — 10
+- The extension remembers the full combination for each website. — 9
 
 ## How it works and free controls
 
@@ -65,9 +65,9 @@ present; “unlock” is used only for the literal paid license.
 - Browser-protected pages stay unchanged. — 4
 - Tune with live feedback — 4
 - Adjust type, size, spacing, line length, surface, and the optional moving focus band. — 13
-- Save to the site — 4
-- Name the profile and assign it. — 6
-- Settings return locally for that website address, with no account. — 10
+- Save to this website — 4
+- Name the profile and save it. — 6
+- Settings return locally for that website, with no account. — 9
 - Free controls — 2
 - Reading controls without diagnosis claims. — 5
 - Choose from four font styles. — 5
@@ -76,8 +76,8 @@ present; “unlock” is used only for the literal paid license.
 - Set 36–96 character lines, line spacing, letter spacing, and text size independently. — 13
 - Optional focus band — 3
 - A translucent guide follows your pointer or keyboard focus without capturing clicks. — 12
-- Local by design — 3
-- Only your profile settings and website address assignments are stored. — 10
+- Store profiles on your device. — 5
+- Only your profile settings and website selections are stored. — 9
 - Export or import them anytime. — 5
 
 ## Installation, supporter option, boundary, and footer
@@ -97,10 +97,9 @@ present; “unlock” is used only for the literal paid license.
 - No subscription — 2
 - Reading controls stay free. — 4
 - Support the product once and unlock three decorative instrument faceplates. — 10
-- Profiles, site matching, every comfort control, and backup/restore remain free forever. — 12
+- Profiles, website matching, every comfort control, and backup/restore remain free forever. — 12
 - Buy supporter unlock — 3
-- Secure hosted checkout. — 3
-- Sociobot/Dodo is the merchant of record; refunds are handled there and revoke the license. — 15
+- A refunded supporter license no longer unlocks faceplates. — 9
 - What this extension does not do — 6
 - Comfort settings, not medical advice. — 5
 - Eye Comfort Profiles changes presentation only. — 6
@@ -111,8 +110,7 @@ present; “unlock” is used only for the literal paid license.
 - Privacy — 1
 - Terms — 1
 - Source — 1
-- Built by Param Factory · v1.0.1 · polish-1 — 6
-- Hero artwork generated for this product with Azure AI Foundry. — 10
+- Built by Param Factory · v1.0.2 · polish-2 — 6
 - No analytics or third-party scripts. — 5
 - You’re offline. — 2
 - The download may be unavailable, but installed profiles keep working. — 10
@@ -122,7 +120,7 @@ present; “unlock” is used only for the literal paid license.
 | Concept | Product word |
 | --- | --- |
 | A named group of reading settings | profile |
-| Website match key | website address |
+| Website match key | website |
 | Text and layout adjustments | reading controls |
 | Horizontal reading guide | focus band |
 | Page color pairing | reading surface |

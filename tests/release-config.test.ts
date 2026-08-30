@@ -21,7 +21,7 @@ describe('release configuration', () => {
 
   it('uses a designed 404 response and caches hashed assets immutably', () => {
     expect(staticConfig.responseOverrides['404']).toEqual({ rewrite: '/404.html', statusCode: 404 });
-    expect(readFileSync('site/404.html', 'utf8')).toContain('<h1>That page is not here.</h1>');
+    expect(readFileSync('site/404.html', 'utf8')).toContain('<h1 tabindex="-1">That page is not here.</h1>');
     expect(liveVerification).toContain("new URL('/this-route-does-not-exist', site)");
     expect(liveVerification).toContain('missing.status !== 404');
     expect(staticConfig.routes).toContainEqual({

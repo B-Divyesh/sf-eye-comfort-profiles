@@ -1,4 +1,5 @@
 import { captureLicenseFromUrl, cachedVerdict, checkoutUrl, verifyLicense } from '../shared/license';
+import './route-focus';
 
 const size = document.querySelector<HTMLInputElement>('#demo-size');
 const spacing = document.querySelector<HTMLInputElement>('#demo-space');

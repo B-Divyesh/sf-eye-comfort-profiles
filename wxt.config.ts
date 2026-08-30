@@ -5,7 +5,7 @@ export default defineConfig({
   outDir: '.output',
   manifest: {
     name: 'Eye Comfort Profiles',
-    description: 'Apply repeatable reading geometry and a focus band to each site.',
+    description: 'Apply repeatable reading settings and a focus band to each website.',
     version: '1.0.0',
     permissions: ['storage', 'activeTab'],
     host_permissions: ['<all_urls>'],

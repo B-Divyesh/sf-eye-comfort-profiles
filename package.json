@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Local, repeatable per-site reading geometry for Chromium browsers.",
+  "description": "Local, repeatable per-website reading settings for Chromium browsers.",
   "scripts": {
     "dev": "wxt",
     "dev:site": "vite --config vite.site.config.ts",

@@ -11,15 +11,17 @@ const chromePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? chromium.execut
 const articleMarkup = '<!doctype html><html><head><title>Reading sample</title><style>article p { font-family: Georgia, serif; font-size: 15px; line-height: 1.35; letter-spacing: normal; max-width: 90ch; }</style></head><body><main><article><h1>Local article</h1><p id="article-copy">A comfortable local reading sample.</p><button id="reader-button">Continue reading</button></article></main></body></html>';
 const claimTags = [
   '@claim:free-reading-controls',
+  '@claim:four-font-styles',
   '@claim:local-profile-privacy',
   '@claim:offline-profile',
   '@claim:site-profile-reload',
   '@claim:supporter-faceplates',
   '@claim:protected-pages-unchanged',
   '@claim:focus-band-behavior',
-  '@claim:unassigned-pages-unchanged'
+  '@claim:unassigned-pages-unchanged',
+  '@claim:license-restore'
 ];
-const [freeReadingControlsClaim, localProfilePrivacyClaim, offlineProfileClaim, siteProfileReloadClaim, supporterFaceplatesClaim, protectedPagesUnchangedClaim, focusBandBehaviorClaim, unassignedPagesUnchangedClaim] = claimTags;
+const [freeReadingControlsClaim, fourFontStylesClaim, localProfilePrivacyClaim, offlineProfileClaim, siteProfileReloadClaim, supporterFaceplatesClaim, protectedPagesUnchangedClaim, focusBandBehaviorClaim, unassignedPagesUnchangedClaim, licenseRestoreClaim] = claimTags;
 
 const requestedClaim = process.argv.find((argument) => argument.startsWith('--claim='))?.slice('--claim='.length);
 if (requestedClaim && !claimTags.includes(requestedClaim)) {
@@ -100,6 +102,14 @@ try {
   await popup.waitForSelector('#app:not([hidden])');
   if (await popup.locator('#host').textContent() !== '127.0.0.1') throw new Error('Popup did not target the active article tab.');
 
+  if (runsClaim(fourFontStylesClaim)) {
+    const styles = ['system', 'humanist', 'serif', 'mono'];
+    const options = await popup.locator('#font-family option').evaluateAll((items) => items.map((item) => item.value));
+    if (JSON.stringify(options) !== JSON.stringify(styles)) {
+      throw new Error(`The popup did not offer the four documented font styles: ${JSON.stringify(options)}`);
+    }
+  }
+
   await popup.locator('#font-size').focus();
   await popup.keyboard.press('End');
   await popup.locator('#line-height').focus();
@@ -114,7 +124,7 @@ try {
   await popup.locator('#assign').focus();
   await popup.keyboard.press('Enter');
 
-  await popup.waitForFunction(() => document.querySelector('#assign')?.textContent === 'Saved to this site');
+  await popup.waitForFunction(() => document.querySelector('#assign')?.textContent === 'Saved to this website');
   await article.waitForFunction(() => {
     const copy = document.querySelector('#article-copy');
     const band = document.getElementById('eye-comfort-profiles-band');
@@ -222,6 +232,25 @@ try {
     supporterFaceplates = 'verified returned token unlocked brass, coral, and petrol faceplates';
   }
 
+  let restoredLicense = 'not selected';
+  if (requestedClaim === licenseRestoreClaim) {
+    const token = 'restored-supporter-token';
+    await context.route(`https://api.sociobot.in/api/v1/products/eye-comfort-profiles/verify?license=${token}`, (route) => route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ valid: true, reason: 'ok', expires_at: null })
+    }));
+    await popup.locator('summary').click();
+    await popup.locator('#license').fill(token);
+    await popup.locator('#restore').click();
+    await popup.waitForFunction(() => document.querySelector('#license-state')?.textContent === 'Supporter faceplates unlocked. Thank you.');
+    const faceplates = await popup.locator('#faceplate option').evaluateAll((options) => options.map((option) => option.value));
+    if (JSON.stringify(faceplates) !== JSON.stringify(['brass', 'coral', 'petrol'])) {
+      throw new Error(`A restored valid license did not reveal the faceplates: ${JSON.stringify(faceplates)}`);
+    }
+    restoredLicense = 'fixture token restored brass, coral, and petrol faceplates';
+  }
+
   let offlineUpdate = 'not selected';
   if (runsClaim(offlineProfileClaim)) {
     await context.setOffline(true);
@@ -250,13 +279,14 @@ try {
   if (consoleErrors.length) throw new Error(`Article emitted console errors: ${consoleErrors.join('; ')}`);
 
   console.log(JSON.stringify({
-    claims: requestedClaim ? [requestedClaim] : claimTags.filter((claim) => claim !== supporterFaceplatesClaim),
+    claims: requestedClaim ? [requestedClaim] : claimTags.filter((claim) => claim !== supporterFaceplatesClaim && claim !== licenseRestoreClaim),
     extensionId,
     untouched,
     applied,
     protectedPageUnchanged,
     focusBandBehavior,
     supporterFaceplates,
+    restoredLicense,
     offlineUpdate,
     reload,
     externalRequests: unexpectedRequests,

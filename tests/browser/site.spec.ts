@@ -20,7 +20,7 @@ for (const path of ['/', '/privacy/', '/terms/', '/404.html']) {
     await expect(page.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveAttribute('href', '/favicon.svg');
     await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href', '/apple-touch-icon.png');
     await expect(page.locator('footer')).toContainText('Built by Param Factory');
-    await expect(page.locator('footer')).toContainText('v1.0.1');
+    await expect(page.locator('footer')).toContainText('v1.0.2');
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical')).toEqual([]);
     expect(consoleErrors).toEqual([]);
@@ -114,6 +114,38 @@ test('keyboard controls and designed focus remain usable', async ({ page }) => {
   });
   expect(focus.style).not.toBe('none');
   expect(focus.width).toBeGreaterThanOrEqual(3);
+});
+
+test('same-site legal navigation focuses and announces each destination heading', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Privacy' }).first().click();
+  await expect(page).toHaveURL('/privacy/');
+  await expect(page.getByRole('heading', { name: 'Privacy', level: 1 })).toBeFocused();
+  await expect(page.locator('#route-announcer')).toHaveText('Privacy — Eye Comfort Profiles');
+
+  await page.goBack();
+  await expect(page).toHaveURL('/');
+  await expect(page.getByRole('heading', { name: /Save reading settings for each website/i, level: 1 })).toBeFocused();
+  await expect(page.locator('#route-announcer')).toHaveText('Eye Comfort Profiles — Save settings by website');
+});
+
+test('every route uses the same primary destinations', async ({ page }) => {
+  const destinations: ReadonlyArray<readonly [string, string]> = [
+    ['Demo', '/?demo=1#controls'],
+    ['How it works', '/#how'],
+    ['Controls', '/#controls'],
+    ['Privacy', '/privacy/']
+  ];
+
+  for (const path of ['/', '/privacy/', '/terms/', '/404.html']) {
+    await page.goto(path);
+    const links = page.locator('header nav a');
+    await expect(links).toHaveCount(destinations.length);
+    for (const [index, [name, href]] of destinations.entries()) {
+      await expect(links.nth(index)).toHaveText(name);
+      await expect(links.nth(index)).toHaveAttribute('href', href);
+    }
+  }
 });
 
 test('reduced motion removes meaningful transitions', async ({ page }) => {
