@@ -1,3 +1,17 @@
+# Review-1 note (2026-08-30)
+
+The adversarial first-read review is **FAIL**. See `.factory/review-1.md`.
+
+No product code changed. A fresh clone was used for `npm ci`, `npm test`,
+`npm run build`, the full a11y suite, the live release check, and every
+registered claim command. They passed; the review fails only on F-1-1 through
+F-1-12 (unlisted factual promises and plain-language/README copy issues).
+
+Next: implement the exact claim tests and rewrites, then re-run the complete
+first-read checklist from a fresh browser context and clean clone.
+
+---
+
 # Eye Comfort Profiles — repair and independent-verification handoff
 
 ## Independent verification 5 — PASS
