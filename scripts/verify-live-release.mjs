@@ -45,7 +45,7 @@ for (const marker of [
   'href="/favicon.svg"',
   'href="/apple-touch-icon.png"',
   'Built by Param Factory',
-  'v1.0.1'
+  'v1.0.2'
 ]) {
   if (!html.includes(marker)) throw new Error(`Home page is missing required product identity markup: ${marker}`);
 }
@@ -116,7 +116,7 @@ const missingUrl = new URL('/this-route-does-not-exist', site);
 const missing = await fetch(missingUrl);
 if (missing.status !== 404) throw new Error(`Unknown routes must return the designed 404 response (got ${missing.status}).`);
 const missingHtml = await missing.text();
-if (!missingHtml.includes('<h1>That page is not here.</h1>') || !missingHtml.includes('Built by Param Factory')) {
+if (!missingHtml.includes('<h1 tabindex="-1">That page is not here.</h1>') || !missingHtml.includes('Built by Param Factory')) {
   throw new Error('Unknown route did not return the designed Eye Comfort Profiles 404 page.');
 }
 
