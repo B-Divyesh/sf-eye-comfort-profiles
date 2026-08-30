@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
+import { setTimeout as delay } from 'node:timers/promises';
 
 const slug = 'eye-comfort-profiles';
 const directory = 'dist/site';
@@ -19,4 +20,12 @@ function run(command, args) {
 // Deploy the site root, never an asset-only subdirectory: it includes the
 // advertised extension archive under /downloads/.
 run('/opt/fleet/lib/deploy-static.sh', [slug, directory]);
-run(process.execPath, ['scripts/verify-live-release.mjs']);
+
+const verifyDeadline = Date.now() + Number(process.env.DEPLOY_VERIFY_TIMEOUT_MS ?? 600_000);
+for (;;) {
+  const verification = spawnSync(process.execPath, ['scripts/verify-live-release.mjs'], { stdio: 'inherit' });
+  if (verification.status === 0) break;
+  if (Date.now() >= verifyDeadline) process.exit(verification.status ?? 1);
+  console.error('Public release has not converged yet; retrying in 5 seconds.');
+  await delay(5_000);
+}

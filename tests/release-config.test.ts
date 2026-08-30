@@ -29,8 +29,18 @@ describe('release configuration', () => {
   it('deploys the complete site directory and verifies the public extension archive afterwards', () => {
     expect(packageJson.scripts['deploy:production']).toBe('node scripts/deploy-production.mjs');
     expect(productionDeploy).toContain("run('/opt/fleet/lib/deploy-static.sh', [slug, directory]);");
-    expect(productionDeploy).toContain("run(process.execPath, ['scripts/verify-live-release.mjs']);");
+    expect(productionDeploy).toContain("spawnSync(process.execPath, ['scripts/verify-live-release.mjs']");
+    expect(productionDeploy).toContain('for (;;)');
     expect(productionDeploy).toContain("`${directory}/downloads/eye-comfort-profiles-chrome.zip`");
+  });
+
+  it('stages the extension archive from the factory static build entry point', () => {
+    expect(packageJson.scripts['build:site']).toBe(
+      'vite build --config vite.site.config.ts && npm run package:extension'
+    );
+    expect(packageJson.scripts['test:release']).toBe(
+      'npm run clean && npm run build:site && vitest run tests/release-artifact.test.ts'
+    );
   });
 
   it('ships the required static response hardening policies', () => {

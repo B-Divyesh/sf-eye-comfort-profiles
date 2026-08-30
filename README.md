@@ -11,6 +11,10 @@ page content anywhere.
 
 Live site: <https://eye-comfort-profiles.sociobot.in>
 
+Try the isolated sample preview at
+<https://eye-comfort-profiles.sociobot.in/?demo=1#controls>. It starts with a
+realistic reading setup, saves nothing, and resets in one click.
+
 ## What is included
 
 - Named profiles with font fallback, 14–32px text, line height, letter spacing,
@@ -38,7 +42,7 @@ npm run dev          # WXT extension development
 npm run dev:site     # landing site on a local Vite server
 npm test
 npm run build
-npx playwright install chromium   # first browser-audit run only
+npx playwright install chromium   # first browser-audit run outside the worker image
 npm run test:a11y
 ```
 
@@ -49,6 +53,10 @@ npm run test:a11y
 - `dist/site/downloads/eye-comfort-profiles-chrome.zip`
 - `dist/extension/chrome-mv3/` — unpacked extension
 
+`npm run build:site` is also self-contained. It produces the static site and
+stages the packaged extension under `dist/site/downloads/`, matching the
+factory static deployment entry point.
+
 To test the extension, open `chrome://extensions`, enable Developer mode, choose
 “Load unpacked”, and select `dist/extension/chrome-mv3`.
 
@@ -56,8 +64,11 @@ To test the extension, open `chrome://extensions`, enable Developer mode, choose
 
 ```bash
 npm test
+npm run typecheck
 npm run build
+npm run test:release
 npm run test:extension
+npm run test:a11y
 npx vite --config vite.site.config.ts --host 127.0.0.1
 ```
 

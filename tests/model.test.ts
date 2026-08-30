@@ -28,7 +28,7 @@ describe('profile validation', () => {
     expect(state.assignments).toEqual({ 'example.com': 'kept' });
   });
 
-  it('round-trips a portable backup', () => {
+  it('@claim:backup-roundtrip round-trips a portable backup', () => {
     const state = normalizeState({
       profiles: [{ id: 'one', name: 'Night reading', settings: { ...DEFAULT_SETTINGS, theme: 'slate' }, updatedAt: 2 }],
       assignments: { 'example.com': 'one' }

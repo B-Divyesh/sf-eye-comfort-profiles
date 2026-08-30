@@ -1,0 +1,58 @@
+[
+  {
+    "id": "chromium-download",
+    "claim": "The public download is an installable Eye Comfort Profiles Manifest V3 archive.",
+    "where": "landing page download actions and README",
+    "test": "npm run test:release",
+    "sandbox": "clean build:site output; assert the advertised path has a ZIP signature, passes unzip -t, and contains the expected MV3 manifest"
+  },
+  {
+    "id": "sample-demo",
+    "claim": "The live reading preview opens with sample settings in one click and saves nothing.",
+    "where": "landing page first screen",
+    "test": "npm run test:a11y -- --grep @claim:sample-demo",
+    "sandbox": "fresh browser context at the landing page; click the sample action, assert seeded values and empty localStorage, then reset"
+  },
+  {
+    "id": "first-party-site",
+    "claim": "The product site uses no analytics or third-party runtime scripts.",
+    "where": "landing footer, privacy page, and README",
+    "test": "npm run test:a11y -- --grep @claim:first-party-site",
+    "sandbox": "fresh browser context; record every request while using the sample preview and assert the site origin is the only origin"
+  },
+  {
+    "id": "free-reading-controls",
+    "claim": "Every reading control works without a supporter license.",
+    "where": "landing supporter section, extension popup, terms, and README",
+    "test": "npm run test:extension -- --claim=@claim:free-reading-controls",
+    "sandbox": "fresh unpacked extension profile with no license; use keyboard controls, assign a profile, and assert the page presentation changes"
+  },
+  {
+    "id": "local-profile-privacy",
+    "claim": "Profile use does not send page content or browsing activity to an external service.",
+    "where": "landing facts, privacy page, and README",
+    "test": "npm run test:extension -- --claim=@claim:local-profile-privacy",
+    "sandbox": "fresh unpacked extension profile and local article; record HTTP(S) requests through the full profile flow and reject every non-local origin"
+  },
+  {
+    "id": "offline-profile",
+    "claim": "Installed reading profiles keep working while the browser is offline.",
+    "where": "landing facts, offline notice, and README",
+    "test": "npm run test:extension -- --claim=@claim:offline-profile",
+    "sandbox": "fresh unpacked extension profile; assign a profile, take Chromium offline, change text size by keyboard, and assert the article updates"
+  },
+  {
+    "id": "site-profile-reload",
+    "claim": "A saved profile returns for its hostname on the next visit.",
+    "where": "landing first screen, how-it-works section, and README",
+    "test": "npm run test:extension -- --claim=@claim:site-profile-reload",
+    "sandbox": "fresh unpacked extension profile and local hostname; save settings, reload the article, and assert the saved presentation is reapplied"
+  },
+  {
+    "id": "backup-roundtrip",
+    "claim": "Profiles and site assignments export to and restore from a portable JSON backup.",
+    "where": "landing features, extension popup, privacy page, and README",
+    "test": "npx vitest run tests/model.test.ts -t @claim:backup-roundtrip",
+    "sandbox": "sample named profile and hostname assignment; export JSON, import it, and assert exact normalized state equality"
+  }
+]

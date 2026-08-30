@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 const zipPath = 'dist/site/downloads/eye-comfort-profiles-chrome.zip';
 
 describe('published MV3 download artifact', () => {
-  it('is a valid ZIP at the exact advertised static download path', () => {
+  it('@claim:chromium-download is a valid ZIP at the exact advertised static download path after build:site', () => {
     expect(existsSync(zipPath)).toBe(true);
     expect(readFileSync(zipPath).subarray(0, 4).toString('binary')).toBe('PK\u0003\u0004');
     expect(() => execFileSync('unzip', ['-t', zipPath], { stdio: 'pipe' })).not.toThrow();

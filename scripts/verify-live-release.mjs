@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -7,6 +8,7 @@ import { spawnSync } from 'node:child_process';
 const site = process.env.SITE_URL ?? 'https://eye-comfort-profiles.sociobot.in';
 const product = 'eye-comfort-profiles';
 const downloadUrl = new URL('/downloads/eye-comfort-profiles-chrome.zip', site);
+const localArchivePath = 'dist/site/downloads/eye-comfort-profiles-chrome.zip';
 const checkoutUrl = 'https://api.sociobot.in/api/v1/products/eye-comfort-profiles/checkout';
 
 function required(value, message) {
@@ -25,10 +27,24 @@ async function response(url, options) {
 const home = await response(site);
 const csp = required(home.headers.get('content-security-policy'), 'Home response is missing CSP.');
 if (!csp.includes("frame-ancestors 'none'")) throw new Error('Home CSP does not prevent framing.');
+if (!csp.includes("connect-src 'self' https://api.sociobot.in")) throw new Error('Home CSP has the wrong connection policy.');
 if (home.headers.get('cross-origin-opener-policy') !== 'same-origin') throw new Error('Home response is missing COOP.');
 if (home.headers.get('x-frame-options') !== 'DENY') throw new Error('Home response is missing X-Frame-Options: DENY.');
+if (home.headers.get('x-content-type-options') !== 'nosniff') throw new Error('Home response is missing nosniff.');
+if (home.headers.get('referrer-policy') !== 'strict-origin-when-cross-origin') throw new Error('Home response has the wrong referrer policy.');
+if (!home.headers.get('permissions-policy')?.includes('camera=()')) throw new Error('Home response is missing Permissions-Policy.');
+if (!home.headers.has('strict-transport-security')) throw new Error('Home response is missing HSTS.');
 
 const html = await home.text();
+if (!html.includes('href="/downloads/eye-comfort-profiles-chrome.zip"')) {
+  throw new Error('Home page does not advertise the verified extension path.');
+}
+if (existsSync('dist/site/index.html')) {
+  const localHtml = await readFile('dist/site/index.html', 'utf8');
+  if (createHash('sha256').update(html).digest('hex') !== createHash('sha256').update(localHtml).digest('hex')) {
+    throw new Error('Public home page does not match this production build.');
+  }
+}
 const asset = required(html.match(/\/assets\/main-[^"']+\.js/)?.[0], 'Could not find the hashed main JavaScript asset.');
 const assetResponse = await response(new URL(asset, site));
 if (assetResponse.headers.get('cache-control') !== 'public, max-age=31536000, immutable') {
@@ -39,9 +55,20 @@ const archive = await response(downloadUrl);
 if (!archive.headers.get('content-type')?.includes('application/zip')) {
   throw new Error(`Download is not application/zip (got ${archive.headers.get('content-type') ?? 'no content type'}).`);
 }
+if (archive.headers.get('cache-control') !== 'public, max-age=3600') {
+  throw new Error('Download does not use the expected one-hour cache policy.');
+}
 const archiveBytes = Buffer.from(await archive.arrayBuffer());
 if (archiveBytes.subarray(0, 4).toString('binary') !== 'PK\u0003\u0004') {
   throw new Error('Download does not start with a ZIP signature.');
+}
+const archiveHash = createHash('sha256').update(archiveBytes).digest('hex');
+if (existsSync(localArchivePath)) {
+  const localArchive = await readFile(localArchivePath);
+  const localHash = createHash('sha256').update(localArchive).digest('hex');
+  if (archiveHash !== localHash) {
+    throw new Error(`Public download does not match this build (live ${archiveHash}, local ${localHash}).`);
+  }
 }
 
 const directory = await mkdtemp(join(tmpdir(), 'eye-comfort-profiles-'));
@@ -65,9 +92,11 @@ if (checkout.status !== 303 || !checkout.headers.get('location')?.startsWith('ht
   throw new Error(`Production checkout mapping is not a Sociobot/Dodo redirect (got ${checkout.status}).`);
 }
 
+await Promise.all(['/privacy/', '/terms/', '/robots.txt', '/sitemap.xml'].map((path) => response(new URL(path, site))));
+
 console.log(JSON.stringify({
   site,
-  download: { url: downloadUrl.href, bytes: archiveBytes.length, sha256: createHash('sha256').update(archiveBytes).digest('hex') },
+  download: { url: downloadUrl.href, bytes: archiveBytes.length, sha256: archiveHash, matchesLocalBuild: existsSync(localArchivePath) },
   asset,
   checkout: checkout.headers.get('location')
 }, null, 2));

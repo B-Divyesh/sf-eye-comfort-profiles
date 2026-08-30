@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Save readable font, spacing, line width, contrast, and focus-band settings for every website." />
     <meta name="theme-color" content="#e8e1d2" />
-    <title>Eye Comfort Profiles — your reading geometry, remembered</title>
+    <title>Eye Comfort Profiles — Save reading settings by site</title>
     <link rel="canonical" href="https://eye-comfort-profiles.sociobot.in/" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="preload" as="image" href="/assets/panel-reader-hero-640.webp" imagesrcset="/assets/panel-reader-hero-640.webp 640w, /assets/panel-reader-hero-960.webp 960w" imagesizes="(max-width: 760px) 100vw, 54vw" />
@@ -23,24 +23,30 @@
       <a class="header-download" href="/downloads/eye-comfort-profiles-chrome.zip" download>Download v1.0</a>
     </header>
 
+    <aside class="demo-banner" id="demo-banner" aria-label="Sample data notice" hidden>
+      <p><strong>Demo — sample data, nothing is saved.</strong></p>
+      <div><button id="reset-demo" type="button">Reset demo</button><a href="/">Start for real</a></div>
+    </aside>
+
     <main id="main">
       <section class="hero">
         <div class="hero-copy">
-          <p class="kicker"><span class="lamp" aria-hidden="true"></span>Local reading instrument</p>
-          <h1>Your reading geometry,<br /><em>remembered.</em></h1>
-          <p class="lede">Set type, spacing, line length, contrast, and a quiet focus band once. Eye Comfort Profiles brings that exact layout back when you return to the site.</p>
+          <p class="kicker"><span class="lamp" aria-hidden="true"></span>Reading profiles for Chromium</p>
+          <h1>Save reading settings<br /><em>for each site.</em></h1>
+          <p class="lede">For readers with eye strain or low vision, it restores the text size, spacing, contrast, and focus aid they choose.</p>
           <div class="hero-actions">
-            <a class="button primary" href="/downloads/eye-comfort-profiles-chrome.zip" download>Download for Chromium <span aria-hidden="true">↓</span></a>
-            <a class="text-link" href="#install">See 3-step install</a>
+            <a class="button primary" href="/?demo=1#controls">Try it with sample data</a>
+            <a class="text-link" href="/downloads/eye-comfort-profiles-chrome.zip" download>Download for Chromium <span aria-hidden="true">↓</span></a>
           </div>
-          <p class="fine-print">Free core features · Works offline · Browsing stays on your device</p>
+          <p class="action-note">The demo opens a live reading preview and saves nothing.</p>
+          <p class="fine-print">Free reading controls · Installed profiles work offline · Settings stay in browser storage</p>
         </div>
         <figure class="hero-visual">
           <picture>
             <source media="(max-width: 700px)" srcset="/assets/panel-reader-hero-640.webp" />
             <img src="/assets/panel-reader-hero-960.webp" srcset="/assets/panel-reader-hero-640.webp 640w, /assets/panel-reader-hero-960.webp 960w" sizes="(max-width: 760px) 100vw, 54vw" width="960" height="640" alt="An illustrated cream reading calibration machine guiding abstract lines through a warm horizontal focus band" decoding="async" fetchpriority="high" />
           </picture>
-          <figcaption><span>Instrument 01</span><span>Profile memory / local</span></figcaption>
+          <figcaption><span>Reading profile preview</span><span>Generated product artwork</span></figcaption>
         </figure>
       </section>
 
@@ -55,8 +61,8 @@
 
       <section class="calibration-section" id="controls" aria-labelledby="calibration-title">
         <div class="section-intro">
-          <p class="section-number">01 / Calibrate</p>
-          <h2 id="calibration-title">Tune the page, not your posture.</h2>
+          <p class="section-number">Live preview</p>
+          <h2 id="calibration-title">Adjust a reading sample.</h2>
           <p>There is no “correct” font for every reader. Start with what feels easy, then save the combination—not a prescription.</p>
         </div>
         <div class="demo-panel">
@@ -88,8 +94,8 @@
 
       <section class="how-section" id="how" aria-labelledby="how-title">
         <div class="section-intro">
-          <p class="section-number">02 / Remember</p>
-          <h2 id="how-title">Three moves. Then just read.</h2>
+          <p class="section-number">How it works</p>
+          <h2 id="how-title">Save a profile in three steps.</h2>
         </div>
         <ol class="steps">
           <li><span class="step-dial">1</span><div><h3>Open a page</h3><p>Select the extension on any regular website. Protected browser pages remain untouched.</p></div></li>
@@ -99,8 +105,8 @@
       </section>
 
       <section class="feature-section" aria-labelledby="features-title">
-        <p class="section-number">03 / Keep control</p>
-        <h2 id="features-title">A profile system, not a diagnosis.</h2>
+        <p class="section-number">Free controls</p>
+        <h2 id="features-title">Reading controls without diagnosis claims.</h2>
         <div class="feature-grid">
           <article><span aria-hidden="true">Aa</span><h3>Four honest font stacks</h3><p>System, humanist, serif, or mono fallbacks—never a claim that one face works for everyone.</p></article>
           <article><span aria-hidden="true">↔</span><h3>Reading geometry</h3><p>Set 36–96 character lines, leading, letter spacing, and text size independently.</p></article>
@@ -111,8 +117,8 @@
 
       <section class="install-section" id="install" aria-labelledby="install-title">
         <div>
-          <p class="section-number">Manual install / Chromium</p>
-          <h2 id="install-title">Install the signed-off build.</h2>
+          <p class="section-number">Manual install for Chromium</p>
+          <h2 id="install-title">Install this Chromium build.</h2>
           <p>Chrome Web Store review comes later. This factory build installs in developer mode and can be removed at any time.</p>
         </div>
         <ol>
@@ -128,7 +134,7 @@
           <p>One-time supporter unlock</p><strong>$19</strong><span>No subscription</span>
         </div>
         <div>
-          <h2 id="supporter-title">The reading tools stay free.</h2>
+          <h2 id="supporter-title">Reading controls stay free.</h2>
           <p>Support the product once and unlock three decorative instrument faceplates. Profiles, site matching, every comfort control, and backup/restore remain free forever.</p>
           <a class="button signal" id="checkout-link" href="https://api.sociobot.in/api/v1/products/eye-comfort-profiles/checkout">Buy supporter unlock</a>
           <p class="fine-print">Secure hosted checkout. Sociobot/Dodo is the merchant of record; refunds are handled there and revoke the license.</p>
@@ -145,7 +151,7 @@
 
     <footer>
       <div class="wordmark"><span class="mini-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Eye Comfort Profiles</span></div>
-      <p>Made for readers who know their comfort is personal.</p>
+      <p>Save the reading settings that work for you.</p>
       <nav aria-label="Legal"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-eye-comfort-profiles">Source</a></nav>
       <p class="asset-note">Hero artwork generated for this product with Azure AI Foundry. No analytics or third-party scripts.</p>
     </footer>

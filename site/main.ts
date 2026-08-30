@@ -4,6 +4,9 @@ const size = document.querySelector<HTMLInputElement>('#demo-size');
 const spacing = document.querySelector<HTMLInputElement>('#demo-space');
 const width = document.querySelector<HTMLInputElement>('#demo-width');
 const preview = document.querySelector<HTMLElement>('#reading-preview');
+const surfaceControls = [...document.querySelectorAll<HTMLInputElement>('input[name="surface"]')];
+
+const SAMPLE = { size: '24', spacing: '1.8', width: '52', surface: 'slate' } as const;
 
 function updatePreview(): void {
   if (!size || !spacing || !width || !preview) return;
@@ -16,10 +19,28 @@ function updatePreview(): void {
 }
 
 for (const control of [size, spacing, width]) control?.addEventListener('input', updatePreview);
-for (const radio of document.querySelectorAll<HTMLInputElement>('input[name="surface"]')) {
+for (const radio of surfaceControls) {
   radio.addEventListener('change', () => { if (preview) preview.dataset.surface = radio.value; });
 }
 updatePreview();
+
+function loadSample(): void {
+  if (!size || !spacing || !width || !preview) return;
+  size.value = SAMPLE.size;
+  spacing.value = SAMPLE.spacing;
+  width.value = SAMPLE.width;
+  const surface = surfaceControls.find(({ value }) => value === SAMPLE.surface);
+  if (surface) surface.checked = true;
+  preview.dataset.surface = SAMPLE.surface;
+  updatePreview();
+}
+
+if (new URL(location.href).searchParams.get('demo') === '1') {
+  document.title = 'Demo — Eye Comfort Profiles';
+  document.querySelector<HTMLElement>('#demo-banner')!.hidden = false;
+  document.querySelector<HTMLButtonElement>('#reset-demo')!.addEventListener('click', loadSample);
+  loadSample();
+}
 
 const offlineBanner = document.querySelector<HTMLElement>('#offline-banner')!;
 function updateOnlineState(): void { offlineBanner.hidden = navigator.onLine; }
