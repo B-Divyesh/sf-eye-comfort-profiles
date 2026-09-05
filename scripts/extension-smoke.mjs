@@ -316,7 +316,8 @@ try {
 
   if (runsClaim(localProfilePrivacyClaim)) {
     const storedState = await popup.evaluate(async () => (await chrome.storage.local.get('eyeComfortState')).eyeComfortState);
-    if (storedState?.assignments?.['127.0.0.1'] === undefined || storedState?.profiles?.[0]?.settings?.fontSize !== 32) {
+    const expectedStoredSize = runsClaim(offlineProfileClaim) ? 31 : 32;
+    if (storedState?.assignments?.['127.0.0.1'] === undefined || storedState?.profiles?.[0]?.settings?.fontSize !== expectedStoredSize) {
       throw new Error(`The saved profile was not retained in browser extension storage: ${JSON.stringify(storedState)}`);
     }
   }
