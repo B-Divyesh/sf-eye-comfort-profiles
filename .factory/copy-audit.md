@@ -1,6 +1,6 @@
 # Landing-page copy audit
 
-Audited source: `site/index.html` and `README.md` on 2026-08-30. Counts treat hyphenated
+Audited source: `site/index.html` and `README.md` on 2026-09-05. Counts treat hyphenated
 terms, URLs, version numbers, and numeric readouts as one word. Symbols used
 only as artwork are excluded. No sentence exceeds 22 words. No banned word is
 present; “unlock” is used only for the literal paid license.
@@ -13,7 +13,7 @@ present; “unlock” is used only for the literal paid license.
 - How it works — 3
 - Controls — 1
 - Privacy — 1
-- Download v1.0 — 2
+- Download v1.0.0 — 2
 - Demo — sample data, nothing is saved. — 6
 - Reset demo — 2
 - Leave demo — 2
@@ -23,11 +23,10 @@ present; “unlock” is used only for the literal paid license.
 - Try it with sample data — 5
 - Download for Chromium — 3
 - The demo opens a live reading preview and saves nothing. — 10
-- Free reading controls. — 3
-- Installed profiles work offline. — 4
 - Settings stay in browser storage. — 5
+- Installed profiles work offline. — 4
+- Supporter faceplates cost $19 once. — 5
 - Reading profile preview — 3
-- Generated product artwork — 3
 
 ## Problem and preview
 
@@ -69,7 +68,7 @@ present; “unlock” is used only for the literal paid license.
 - Name the profile and assign it. — 6
 - Settings return locally for that website, with no account. — 9
 - Free controls — 2
-- Reading controls without diagnosis claims. — 5
+- Change text, spacing, contrast, and focus. — 6
 - Choose from four font styles. — 5
 - Choose system sans, rounded sans, serif, or monospaced text. — 9
 - Text size, spacing, and line length. — 7
@@ -96,8 +95,7 @@ present; “unlock” is used only for the literal paid license.
 - $19 — 1
 - No subscription — 2
 - Reading controls stay free. — 4
-- Support the product once and unlock three decorative instrument faceplates. — 10
-- Profiles, website matching, every comfort control, and backup/restore remain free forever. — 12
+- A supporter license adds three faceplates. Profiles, website matching, reading controls, and backups work without one. — 16
 - Buy supporter unlock — 3
 - A refunded supporter license no longer unlocks faceplates. — 9
 - What this extension does not do — 6
@@ -110,7 +108,7 @@ present; “unlock” is used only for the literal paid license.
 - Privacy — 1
 - Terms — 1
 - Source — 1
-- Built by Param Factory · v1.0.2 · polish-2 — 6
+- Built by Param Factory · Extension v1.0.0 · Site build repair-6 — 9
 - No analytics or third-party scripts. — 5
 - You’re offline. — 2
 - The download may be unavailable, but installed profiles keep working. — 10

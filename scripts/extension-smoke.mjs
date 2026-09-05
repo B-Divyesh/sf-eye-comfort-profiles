@@ -19,9 +19,10 @@ const claimTags = [
   '@claim:protected-pages-unchanged',
   '@claim:focus-band-behavior',
   '@claim:unassigned-pages-unchanged',
-  '@claim:license-restore'
+  '@claim:license-restore',
+  '@claim:unlicensed-profile-tools'
 ];
-const [freeReadingControlsClaim, fourFontStylesClaim, localProfilePrivacyClaim, offlineProfileClaim, siteProfileReloadClaim, supporterFaceplatesClaim, protectedPagesUnchangedClaim, focusBandBehaviorClaim, unassignedPagesUnchangedClaim, licenseRestoreClaim] = claimTags;
+const [freeReadingControlsClaim, fourFontStylesClaim, localProfilePrivacyClaim, offlineProfileClaim, siteProfileReloadClaim, supporterFaceplatesClaim, protectedPagesUnchangedClaim, focusBandBehaviorClaim, unassignedPagesUnchangedClaim, licenseRestoreClaim, unlicensedProfileToolsClaim] = claimTags;
 
 const requestedClaim = process.argv.find((argument) => argument.startsWith('--claim='))?.slice('--claim='.length);
 if (requestedClaim && !claimTags.includes(requestedClaim)) {
@@ -160,6 +161,50 @@ try {
     throw new Error(`Profile did not apply its keyboard-selected bounds: ${JSON.stringify(applied)}`);
   }
 
+  let unlicensedProfileTools = 'not selected';
+  if (runsClaim(unlicensedProfileToolsClaim)) {
+    const license = await popup.evaluate(async (licenseKey) => ({
+      local: localStorage.getItem(licenseKey),
+      transferred: (await chrome.storage.local.get(licenseKey))[licenseKey]
+    }), 'sb_license:eye-comfort-profiles');
+    if (license.local || license.transferred) {
+      throw new Error(`Fresh profile tools unexpectedly started with a supporter license: ${JSON.stringify(license)}`);
+    }
+
+    await popup.locator('summary').click();
+    await popup.locator('#export').waitFor();
+    const downloadPromise = popup.waitForEvent('download');
+    await popup.locator('#export').click();
+    const download = await downloadPromise;
+    if (download.suggestedFilename() !== 'eye-comfort-profiles-backup.json') {
+      throw new Error(`Profile backup used the wrong filename: ${download.suggestedFilename()}`);
+    }
+    const backupStream = await download.createReadStream();
+    if (!backupStream) throw new Error('Profile backup could not be read after export.');
+    const chunks = [];
+    for await (const chunk of backupStream) chunks.push(chunk);
+    const backupText = Buffer.concat(chunks).toString('utf8');
+    const backup = JSON.parse(backupText);
+    if (backup.assignments?.['127.0.0.1'] === undefined || backup.profiles?.[0]?.settings?.fontSize !== 32) {
+      throw new Error(`Exported backup did not contain the unlicensed saved profile: ${backupText}`);
+    }
+
+    await popup.locator('#import').setInputFiles({
+      name: 'eye-comfort-profiles-backup.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(backupText)
+    });
+    await popup.waitForFunction(() => document.querySelector('#notice')?.textContent === 'Backup imported. Existing profiles were replaced.');
+    const restoredState = await popup.evaluate(async () => (await chrome.storage.local.get('eyeComfortState')).eyeComfortState);
+    if (restoredState?.assignments?.['127.0.0.1'] === undefined || restoredState?.profiles?.[0]?.settings?.fontSize !== 32) {
+      throw new Error(`Imported backup did not restore the unlicensed profile: ${JSON.stringify(restoredState)}`);
+    }
+    if (applied.paragraphFontSize !== '32px') {
+      throw new Error(`Unlicensed reading controls did not change the article: ${JSON.stringify(applied)}`);
+    }
+    unlicensedProfileTools = 'unlicensed profile saved, matched, applied, exported, and imported';
+  }
+
   let focusBandBehavior = 'not selected';
   if (runsClaim(focusBandBehaviorClaim)) {
     const pointerY = 250;
@@ -269,6 +314,13 @@ try {
     reload = `${expectedSize} reapplied from local extension storage`;
   }
 
+  if (runsClaim(localProfilePrivacyClaim)) {
+    const storedState = await popup.evaluate(async () => (await chrome.storage.local.get('eyeComfortState')).eyeComfortState);
+    if (storedState?.assignments?.['127.0.0.1'] === undefined || storedState?.profiles?.[0]?.settings?.fontSize !== 32) {
+      throw new Error(`The saved profile was not retained in browser extension storage: ${JSON.stringify(storedState)}`);
+    }
+  }
+
   const unexpectedRequests = requests.filter((value) => {
     const url = new URL(value);
     return ['http:', 'https:'].includes(url.protocol) && url.hostname !== '127.0.0.1';
@@ -285,6 +337,7 @@ try {
     applied,
     protectedPageUnchanged,
     focusBandBehavior,
+    unlicensedProfileTools,
     supporterFaceplates,
     restoredLicense,
     offlineUpdate,

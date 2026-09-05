@@ -36,10 +36,10 @@
   },
   {
     "id": "local-profile-privacy",
-    "claim": "Profile use does not send page content or browsing activity to an external service.",
+    "claim": "Profiles stay in browser storage and do not send page content or browsing activity to an external service.",
     "where": "landing facts, privacy page, and README",
     "test": "npm run test:extension -- --claim=@claim:local-profile-privacy",
-    "sandbox": "fresh unpacked extension profile and local article; record HTTP(S) requests through the full profile flow and reject every non-local origin"
+    "sandbox": "fresh unpacked extension profile and local article; assert the saved profile is in extension storage, then record HTTP(S) requests through the full flow and reject every non-local origin"
   },
   {
     "id": "offline-profile",
@@ -87,8 +87,15 @@
     "id": "supporter-price",
     "claim": "The optional decorative supporter unlock is $19 once, with no subscription; reading controls remain free.",
     "where": "landing supporter section, extension popup, terms, and README",
-    "test": "npm run test:a11y -- --grep @claim:supporter-price",
-    "sandbox": "local landing page; assert the exact $19 and no-subscription copy, Sociobot checkout mapping, and free-control statement"
+    "test": "npm run test:live",
+    "sandbox": "live product check; request the advertised checkout endpoint, assert its Dodo redirect, then inspect the hosted checkout summary for Eye Comfort Profiles at $19.00"
+  },
+  {
+    "id": "unlicensed-profile-tools",
+    "claim": "Profiles, website matching, reading controls, and backups work without a supporter license.",
+    "where": "landing supporter section, extension popup, and README",
+    "test": "npm run test:extension -- --claim=@claim:unlicensed-profile-tools",
+    "sandbox": "fresh unpacked extension with no license; save a keyboard-tuned profile to a local website, confirm the reading result, then export and import that profile backup"
   },
   {
     "id": "comfort-not-medical-advice",

@@ -20,8 +20,8 @@ realistic reading setup, saves nothing, and resets in one click.
 - An optional focus band follows the pointer or keyboard focus
 - Save a profile for a website. Other websites stay unchanged.
 - Export and restore a backup file
-- Optional $19 one-time supporter purchase for decorative faceplates; every
-  reading and backup feature remains free
+- A supporter license adds three faceplates. Profiles, website matching,
+  reading controls, and backups work without one.
 - Static product site, privacy policy, and terms
 
 ## Requirements
@@ -96,12 +96,6 @@ extension does not collect browser history.
 
 See [the privacy policy](site/privacy/index.html) and
 [terms](site/terms/index.html).
-
-## Design and provenance
-
-The product-specific mid-century instrument system and generated-art provenance
-are recorded in [`.factory/design.md`](.factory/design.md). The source hero image
-and prompt sidecars live in `assets/src/`; optimized WebP variants ship locally.
 
 ## License
 

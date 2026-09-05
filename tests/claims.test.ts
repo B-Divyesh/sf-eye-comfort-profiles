@@ -15,7 +15,8 @@ const taggedTestSources = [
   'tests/model.test.ts',
   'tests/license.test.ts',
   'tests/release-artifact.test.ts',
-  'scripts/extension-smoke.mjs'
+  'scripts/extension-smoke.mjs',
+  'scripts/verify-live-release.mjs'
 ].map((path) => readFileSync(path, 'utf8')).join('\n');
 
 describe('public claims contract', () => {

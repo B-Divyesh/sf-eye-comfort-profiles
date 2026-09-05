@@ -45,7 +45,8 @@ for (const marker of [
   'href="/favicon.svg"',
   'href="/apple-touch-icon.png"',
   'Built by Param Factory',
-  'v1.0.2'
+  'Extension v1.0.0',
+  'Site build repair-6'
 ]) {
   if (!html.includes(marker)) throw new Error(`Home page is missing required product identity markup: ${marker}`);
 }
@@ -97,9 +98,18 @@ try {
   await rm(directory, { recursive: true, force: true });
 }
 
+// @claim:supporter-price The live purchase path must reach the hosted product
+// page with the advertised item and price, not merely contain a checkout URL.
 const checkout = await fetch(checkoutUrl, { redirect: 'manual' });
-if (checkout.status !== 303 || !checkout.headers.get('location')?.startsWith('https://checkout.dodopayments.com/')) {
+const checkoutLocation = checkout.headers.get('location');
+if (checkout.status !== 303 || !checkoutLocation?.startsWith('https://checkout.dodopayments.com/')) {
   throw new Error(`Production checkout mapping is not a Sociobot/Dodo redirect (got ${checkout.status}).`);
+}
+const hostedCheckout = await fetch(checkoutLocation);
+if (!hostedCheckout.ok) throw new Error(`Hosted supporter checkout returned ${hostedCheckout.status}.`);
+const hostedCheckoutText = await hostedCheckout.text();
+if (!hostedCheckoutText.includes('Eye Comfort Profiles') || !hostedCheckoutText.includes('$19.00')) {
+  throw new Error('Hosted supporter checkout does not show Eye Comfort Profiles at $19.00.');
 }
 
 await Promise.all([
@@ -124,6 +134,6 @@ console.log(JSON.stringify({
   site,
   download: { url: downloadUrl.href, bytes: archiveBytes.length, sha256: archiveHash, matchesLocalBuild: existsSync(localArchivePath) },
   asset,
-  checkout: checkout.headers.get('location'),
+  checkout: { redirect: checkoutLocation, product: 'Eye Comfort Profiles', price: '$19.00' },
   notFound: { url: missingUrl.href, status: missing.status }
 }, null, 2));

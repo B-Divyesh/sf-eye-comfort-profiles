@@ -20,7 +20,9 @@ for (const path of ['/', '/privacy/', '/terms/', '/404.html']) {
     await expect(page.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveAttribute('href', '/favicon.svg');
     await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href', '/apple-touch-icon.png');
     await expect(page.locator('footer')).toContainText('Built by Param Factory');
-    await expect(page.locator('footer')).toContainText('v1.0.2');
+    await expect(page.locator('footer')).toContainText('Extension v1.0.0');
+    await expect(page.locator('footer')).toContainText('Site build repair-6');
+    await expect(page.getByRole('link', { name: 'Download v1.0.0' })).toBeVisible();
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical')).toEqual([]);
     expect(consoleErrors).toEqual([]);
@@ -148,6 +150,13 @@ test('every route uses the same primary destinations', async ({ page }) => {
   }
 });
 
+test('the sitemap lists the direct demo entry alongside the normal routes', async ({ page }) => {
+  const response = await page.request.get('/sitemap.xml');
+  expect(response.ok()).toBe(true);
+  const sitemap = await response.text();
+  expect(sitemap).toContain('https://eye-comfort-profiles.sociobot.in/?demo=1');
+});
+
 test('reduced motion removes meaningful transitions', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
@@ -158,7 +167,7 @@ test('reduced motion removes meaningful transitions', async ({ page }) => {
   expect(durations.every((value) => value.split(',').every((duration) => parseFloat(duration) <= 0.001))).toBe(true);
 });
 
-test('@claim:supporter-price offers the $19 one-time supporter unlock without gating reading controls', async ({ page }) => {
+test('supporter details use the same current free-tool wording as the extension', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#checkout-link')).toHaveAttribute(
     'href',
@@ -166,7 +175,7 @@ test('@claim:supporter-price offers the $19 one-time supporter unlock without ga
   );
   await expect(page.getByText('$19', { exact: true })).toBeVisible();
   await expect(page.getByText('No subscription', { exact: true })).toBeVisible();
-  await expect(page.getByText(/every comfort control.*remain free/i)).toBeVisible();
+  await expect(page.getByText(/profiles, website matching, reading controls, and backups work without one/i)).toBeVisible();
 });
 
 test('@claim:comfort-not-medical-advice states the extension medical boundary plainly', async ({ page }) => {
