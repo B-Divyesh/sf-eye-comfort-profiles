@@ -55,9 +55,9 @@ From the documented clean setup, `npm ci` completed with 0 vulnerabilities.
   the hosted Eye Comfort Profiles $19.00 checkout.
 - `npm run test:live` — passed after deployment: archive, checksum, headers,
   cache policy, checkout, legal/identity routes, and designed HTTP 404.
-- `/opt/fleet/lib/verify-url.sh` — live 200, 966ms, correct title/lang, one
+- `/opt/fleet/lib/verify-url.sh` — live 200, 920ms, correct title/lang, one
   h1/main, no missing alt text or console errors. Evidence:
-  `/work/.evidence/eye-comfort-profiles-repair-7-verify-url/`.
+  `/work/.evidence/eye-comfort-profiles-repair-7-final-verify/`.
 - Fresh HTTPS Playwright desktop (1440×900) and phone (390×844) contexts both
   showed the job, audience, and **Try it with sample data** before scrolling.
   The one-click demo showed 24px / 1.80× / 52ch / Slate, kept its sample-data
