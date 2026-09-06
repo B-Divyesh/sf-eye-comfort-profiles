@@ -8,12 +8,13 @@ static product now matches the release build at
 
 ## Release identity
 
-- Deployed implementation: `023fa64e7ef7bc4a079c7ed9e6c22409495f0757`
-  (`7f6e186e113397d220ad93c4406509680a2fc9fe` contains the functional repair;
-  `023fa64` adds a space in the visible/accessibility headline text).
+- Deployed implementation: `ce566af87d67f272d6eda924e3cbc98a5198661c`
+  (`7f6e186` contains the initial functional repair; `023fa64` adds the
+  visible/accessibility headline space; `ce566af` retains temporary previews
+  when the reader switches profiles on an already assigned website).
 - Documentation handoff: `d56f4a4938e32bfdcd362c9ed22f420a729deee0`.
 - Public MV3 ZIP: 28,210 bytes, SHA-256
-  `0858641aa9c8e196c129c3980163b8d7a60c2f52463ba4032927fa2912961a93`.
+  `468f7b7da765c1e677b13307a87ed8580fafb7f2df7cb0ecb579b5247b7a09fb`.
   `npm run test:live` byte-matched it with `dist/site` after deployment.
 - Catalog description is verb-first, 64 bytes, and is copied unchanged to
   `/work/.evidence/catalog-description.txt`.
@@ -22,7 +23,7 @@ static product now matches the release build at
 
 | Verification 6 finding | Repair and regression evidence |
 | --- | --- |
-| F-6-1: settings did not preview before save | The content script now keeps a temporary preview separate from saved website assignments. `@claim:live-page-preview` changes an unassigned article to 32px, waits through the storage event, and proves the visible preview remains while no assignment exists. |
+| F-6-1: settings did not preview before save | The content script now keeps a temporary preview separate from saved website assignments. `@claim:live-page-preview` proves the 32px preview remains before first assignment and that a 14px preview remains when switching to a new profile before replacing an existing website assignment. |
 | F-6-2: free-controls evidence was incomplete | `@claim:free-reading-controls` now proves all four font styles and four surfaces, plus both endpoints of 14–32px text, 1.2–2.2 line spacing, 0–0.12em letter spacing, 36–96ch line width, and 56–180px focus height. Every result is read from the rendered article or focus band with no supporter license. |
 | F-6-3: focus switch was 48×28px | The labelled switch and invisible checkbox input are both 48×44px. The extension browser smoke measures both rendered target boxes and fails below 44px. |
 | F-6-4: popup jargon/metaphor | The visible popup now says **Reading profiles** and exposes **Reading controls** to assistive technology. The browser smoke reads those rendered labels. |
