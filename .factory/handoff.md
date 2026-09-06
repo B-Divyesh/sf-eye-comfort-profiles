@@ -12,8 +12,9 @@ static product now matches the release build at
   (`7f6e186` contains the initial functional repair; `023fa64` adds the
   visible/accessibility headline space; `ce566af` retains temporary previews
   when the reader switches profiles on an already assigned website).
-- Documentation handoff: `d56f4a4938e32bfdcd362c9ed22f420a729deee0`.
-- Public MV3 ZIP: 28,210 bytes, SHA-256
+- Documentation record: `d56f4a4938e32bfdcd362c9ed22f420a729deee0`, updated at
+  `97699d3430ab50a5f28c709376bca70003c6093b`.
+- Public MV3 ZIP: 28,208 bytes, SHA-256
   `468f7b7da765c1e677b13307a87ed8580fafb7f2df7cb0ecb579b5247b7a09fb`.
   `npm run test:live` byte-matched it with `dist/site` after deployment.
 - Catalog description is verb-first, 64 bytes, and is copied unchanged to
