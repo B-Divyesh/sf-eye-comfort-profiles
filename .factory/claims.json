@@ -25,7 +25,14 @@
     "claim": "Every reading control works without a supporter license.",
     "where": "landing supporter section, extension popup, terms, and README",
     "test": "npm run test:extension -- --claim=@claim:free-reading-controls",
-    "sandbox": "fresh unpacked extension profile with no license; use keyboard controls, assign a profile, and assert the page presentation changes"
+    "sandbox": "fresh unpacked extension with no license; save a profile, then use each font style and reading surface plus both ends of text size, line spacing, letter spacing, line width, and focus-band height; assert each rendered page result"
+  },
+  {
+    "id": "live-page-preview",
+    "claim": "A changed setting previews on the current website before a profile is saved there.",
+    "where": "landing page how-it-works step and extension popup",
+    "test": "npm run test:extension -- --claim=@claim:live-page-preview",
+    "sandbox": "fresh unpacked extension and unassigned local article; change text size, wait beyond the storage update, and assert the article changes while extension storage has no website assignment"
   },
   {
     "id": "four-font-styles",

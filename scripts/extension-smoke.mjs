@@ -8,9 +8,10 @@ const extensionPath = join(process.cwd(), 'dist/extension/chrome-mv3');
 const chromePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? chromium.executablePath();
 // A representative article sets its own prose typography, as common CMS
 // themes do. This guards the regression where body-only CSS lost to p rules.
-const articleMarkup = '<!doctype html><html><head><title>Reading sample</title><style>article p { font-family: Georgia, serif; font-size: 15px; line-height: 1.35; letter-spacing: normal; max-width: 90ch; }</style></head><body><main><article><h1>Local article</h1><p id="article-copy">A comfortable local reading sample.</p><button id="reader-button">Continue reading</button></article></main></body></html>';
+const articleMarkup = '<!doctype html><html><head><title>Reading sample</title><style>body { background: rgb(246, 244, 240); color: rgb(31, 35, 33); } article p { font-family: Georgia, serif; font-size: 15px; line-height: 1.35; letter-spacing: normal; max-width: 90ch; }</style></head><body><main><article><h1>Local article</h1><p id="article-copy">A comfortable local reading sample.</p><button id="reader-button">Continue reading</button></article></main></body></html>';
 const claimTags = [
   '@claim:free-reading-controls',
+  '@claim:live-page-preview',
   '@claim:four-font-styles',
   '@claim:local-profile-privacy',
   '@claim:offline-profile',
@@ -22,7 +23,7 @@ const claimTags = [
   '@claim:license-restore',
   '@claim:unlicensed-profile-tools'
 ];
-const [freeReadingControlsClaim, fourFontStylesClaim, localProfilePrivacyClaim, offlineProfileClaim, siteProfileReloadClaim, supporterFaceplatesClaim, protectedPagesUnchangedClaim, focusBandBehaviorClaim, unassignedPagesUnchangedClaim, licenseRestoreClaim, unlicensedProfileToolsClaim] = claimTags;
+const [freeReadingControlsClaim, livePagePreviewClaim, fourFontStylesClaim, localProfilePrivacyClaim, offlineProfileClaim, siteProfileReloadClaim, supporterFaceplatesClaim, protectedPagesUnchangedClaim, focusBandBehaviorClaim, unassignedPagesUnchangedClaim, licenseRestoreClaim, unlicensedProfileToolsClaim] = claimTags;
 
 const requestedClaim = process.argv.find((argument) => argument.startsWith('--claim='))?.slice('--claim='.length);
 if (requestedClaim && !claimTags.includes(requestedClaim)) {
@@ -111,6 +112,39 @@ try {
     }
   }
 
+  const switchTarget = await popup.locator('.switch').boundingBox();
+  const switchInputTarget = await popup.locator('#focus-band').boundingBox();
+  if (!switchTarget || !switchInputTarget || switchTarget.width < 44 || switchTarget.height < 44 || switchInputTarget.width < 44 || switchInputTarget.height < 44) {
+    throw new Error(`The focus-band switch target is too small: label=${JSON.stringify(switchTarget)}, input=${JSON.stringify(switchInputTarget)}`);
+  }
+  const popupLabels = await popup.evaluate(() => ({
+    profileContext: document.querySelector('.eyebrow')?.textContent?.trim(),
+    controlsLabel: document.querySelector('.dial-bank')?.getAttribute('aria-label')
+  }));
+  if (popupLabels.profileContext !== 'Reading profiles' || popupLabels.controlsLabel !== 'Reading controls') {
+    throw new Error(`Popup did not expose plain profile and controls labels: ${JSON.stringify(popupLabels)}`);
+  }
+
+  let livePagePreview = 'not selected';
+  if (runsClaim(livePagePreviewClaim)) {
+    await popup.locator('#font-size').focus();
+    await popup.keyboard.press('End');
+    await article.waitForFunction(() => getComputedStyle(document.querySelector('#article-copy')).fontSize === '32px');
+    // The storage event that caused the earlier regression is asynchronous.
+    // Wait beyond it and prove the rendered preview is still present.
+    await article.waitForTimeout(350);
+    const beforeSave = await article.evaluate(() => ({
+      fontSize: getComputedStyle(document.querySelector('#article-copy')).fontSize,
+      profileStyle: Boolean(document.getElementById('eye-comfort-profiles-style'))
+    }));
+    const assignments = await popup.evaluate(async () => (await chrome.storage.local.get('eyeComfortState')).eyeComfortState?.assignments ?? {});
+    if (beforeSave.fontSize !== '32px' || !beforeSave.profileStyle || assignments['127.0.0.1'] !== undefined) {
+      throw new Error(`A changed setting did not remain visible before saving to this website: ${JSON.stringify({ ...beforeSave, assignments })}`);
+    }
+    livePagePreview = '32px preview remained visible before the website was assigned';
+  }
+
+  await popup.locator('#font-family').selectOption('humanist');
   await popup.locator('#font-size').focus();
   await popup.keyboard.press('End');
   await popup.locator('#line-height').focus();
@@ -142,6 +176,7 @@ try {
       paragraphFontSize: getComputedStyle(copy).fontSize,
       paragraphFontFamily: getComputedStyle(copy).fontFamily,
       paragraphLineHeight: getComputedStyle(copy).lineHeight,
+      paragraphLetterSpacing: getComputedStyle(copy).letterSpacing,
       paragraphMaxWidth: getComputedStyle(copy).maxWidth,
       background: getComputedStyle(document.body).backgroundColor,
       bandHeight: band ? getComputedStyle(band).height : null,
@@ -153,12 +188,107 @@ try {
     || applied.paragraphFontSize !== '32px'
     || !applied.paragraphFontFamily.includes('Trebuchet')
     || applied.paragraphLineHeight !== '70.4px'
+    || Math.abs(parseFloat(applied.paragraphLetterSpacing) - .32) > .01
     || applied.paragraphMaxWidth === 'none'
     || applied.background !== 'rgb(28, 37, 38)'
     || applied.bandHeight !== '180px'
     || typeof applied.bandTop !== 'number'
   )) {
     throw new Error(`Profile did not apply its keyboard-selected bounds: ${JSON.stringify(applied)}`);
+  }
+
+  let freeReadingControls = 'not selected';
+  const checkEveryFontStyle = runsClaim(freeReadingControlsClaim) || runsClaim(fourFontStylesClaim);
+  if (checkEveryFontStyle) {
+    const fontExpectations = {
+      system: 'system-ui',
+      humanist: 'trebuchet',
+      serif: 'charter',
+      mono: 'ui-monospace'
+    };
+    for (const [value, expected] of Object.entries(fontExpectations)) {
+      await popup.locator('#font-family').selectOption(value);
+      await article.waitForFunction((token) => getComputedStyle(document.querySelector('#article-copy')).fontFamily.toLowerCase().includes(token), expected);
+    }
+  }
+
+  if (runsClaim(freeReadingControlsClaim)) {
+    const license = await popup.evaluate(async (licenseKey) => ({
+      local: localStorage.getItem(licenseKey),
+      transferred: (await chrome.storage.local.get(licenseKey))[licenseKey]
+    }), 'sb_license:eye-comfort-profiles');
+    if (license.local || license.transferred) {
+      throw new Error(`Reading controls unexpectedly started with a supporter license: ${JSON.stringify(license)}`);
+    }
+
+    await popup.locator('#font-size').focus();
+    await popup.keyboard.press('Home');
+    await article.waitForFunction(() => getComputedStyle(document.querySelector('#article-copy')).fontSize === '14px');
+    await popup.keyboard.press('End');
+    await article.waitForFunction(() => getComputedStyle(document.querySelector('#article-copy')).fontSize === '32px');
+
+    await popup.locator('#line-height').focus();
+    await popup.keyboard.press('Home');
+    await article.waitForFunction(() => Math.abs(parseFloat(getComputedStyle(document.querySelector('#article-copy')).lineHeight) - 38.4) < .1);
+    await popup.keyboard.press('End');
+    await article.waitForFunction(() => Math.abs(parseFloat(getComputedStyle(document.querySelector('#article-copy')).lineHeight) - 70.4) < .1);
+
+    await popup.locator('#letter-spacing').focus();
+    await popup.keyboard.press('Home');
+    await article.waitForFunction(() => getComputedStyle(document.querySelector('#article-copy')).letterSpacing === 'normal' || Math.abs(parseFloat(getComputedStyle(document.querySelector('#article-copy')).letterSpacing)) < .01);
+    await popup.keyboard.press('End');
+    await article.waitForFunction(() => Math.abs(parseFloat(getComputedStyle(document.querySelector('#article-copy')).letterSpacing) - 3.84) < .05);
+
+    await popup.locator('#line-width').focus();
+    await popup.keyboard.press('Home');
+    await article.waitForFunction(() => parseFloat(getComputedStyle(document.querySelector('#article-copy')).maxWidth) > 0);
+    const narrowLine = await article.locator('#article-copy').evaluate((copy) => parseFloat(getComputedStyle(copy).maxWidth));
+    await popup.keyboard.press('End');
+    await article.waitForFunction((narrow) => parseFloat(getComputedStyle(document.querySelector('#article-copy')).maxWidth) > narrow, narrowLine);
+    const wideLine = await article.locator('#article-copy').evaluate((copy) => parseFloat(getComputedStyle(copy).maxWidth));
+    if (Math.abs((wideLine / narrowLine) - (96 / 36)) > .04) {
+      throw new Error(`Line-width endpoints did not render as 36ch and 96ch: narrow=${narrowLine}, wide=${wideLine}`);
+    }
+
+    const surfaceColors = {
+      original: 'rgb(246, 244, 240)',
+      paper: 'rgb(243, 237, 223)',
+      slate: 'rgb(28, 37, 38)',
+      contrast: 'rgb(255, 255, 255)'
+    };
+    for (const [value, expected] of Object.entries(surfaceColors)) {
+      await popup.locator('#theme').selectOption(value);
+      await article.waitForFunction((color) => getComputedStyle(document.body).backgroundColor === color, expected);
+    }
+
+    await popup.locator('#focus-height').focus();
+    await popup.keyboard.press('Home');
+    await article.waitForFunction(() => {
+      const band = document.getElementById('eye-comfort-profiles-band');
+      return Boolean(band) && getComputedStyle(band).height === '56px';
+    });
+    await popup.keyboard.press('End');
+    await article.waitForFunction(() => {
+      const band = document.getElementById('eye-comfort-profiles-band');
+      return Boolean(band) && getComputedStyle(band).height === '180px';
+    });
+    freeReadingControls = 'four fonts, four surfaces, and every advertised numeric control boundary applied without a license';
+  }
+
+  if (checkEveryFontStyle || runsClaim(freeReadingControlsClaim)) {
+    await popup.locator('#font-family').selectOption('humanist');
+    await popup.locator('#font-size').focus();
+    await popup.keyboard.press('End');
+    await popup.locator('#line-height').focus();
+    await popup.keyboard.press('End');
+    await popup.locator('#letter-spacing').focus();
+    await popup.keyboard.press('End');
+    await popup.locator('#line-width').focus();
+    await popup.keyboard.press('Home');
+    await popup.locator('#theme').selectOption('slate');
+    await popup.locator('#focus-height').focus();
+    await popup.keyboard.press('End');
+    await article.waitForFunction(() => getComputedStyle(document.querySelector('#article-copy')).fontSize === '32px' && getComputedStyle(document.body).backgroundColor === 'rgb(28, 37, 38)');
   }
 
   let unlicensedProfileTools = 'not selected';
@@ -337,6 +467,8 @@ try {
     untouched,
     applied,
     protectedPageUnchanged,
+    livePagePreview,
+    freeReadingControls,
     focusBandBehavior,
     unlicensedProfileTools,
     supporterFaceplates,

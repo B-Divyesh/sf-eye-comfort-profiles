@@ -6,6 +6,12 @@ import { LICENSE_KEY } from '../shared/license';
 const STYLE_ID = 'eye-comfort-profiles-style';
 const BAND_ID = 'eye-comfort-profiles-band';
 
+// A popup edit is intentionally temporary until the reader saves it to this
+// website. Keep that preview separate from stored assignments: storage-change
+// events can otherwise race a preview message and erase the just-made change
+// on an unassigned page.
+let previewSettings: ProfileSettings | null = null;
+
 const fonts: Record<ProfileSettings['fontFamily'], string> = {
   system: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
   humanist: '"Trebuchet MS", "Segoe UI", Candara, system-ui, sans-serif',
@@ -116,7 +122,12 @@ async function applyAssigned(): Promise<void> {
   const state = normalizeState(stored[STORAGE_KEY]);
   const profileId = state.assignments[location.hostname];
   const profile = state.profiles.find(({ id }) => id === profileId);
-  apply(profile?.settings ?? null);
+  if (profile) {
+    previewSettings = null;
+    apply(profile.settings);
+    return;
+  }
+  apply(previewSettings);
 }
 
 function captureCheckoutLicense(): void {
@@ -135,8 +146,14 @@ export default defineContentScript({
     void applyAssigned();
     browser.runtime.onMessage.addListener((message: unknown) => {
       const value = message as { type?: string; settings?: ProfileSettings };
-      if (value.type === 'ECP_PREVIEW' && value.settings) apply(value.settings);
-      if (value.type === 'ECP_CLEAR') apply(null);
+      if (value.type === 'ECP_PREVIEW' && value.settings) {
+        previewSettings = normalizeSettings(value.settings);
+        apply(previewSettings);
+      }
+      if (value.type === 'ECP_CLEAR') {
+        previewSettings = null;
+        apply(null);
+      }
     });
     browser.storage.onChanged.addListener((changes, area) => {
       if (area === 'local' && STORAGE_KEY in changes) void applyAssigned();

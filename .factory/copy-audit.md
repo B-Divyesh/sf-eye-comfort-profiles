@@ -60,7 +60,7 @@ present; “unlock” is used only for the literal paid license.
 - How it works — 3
 - Save a profile in three steps. — 6
 - Open a page — 3
-- Select the extension on any regular website. — 7
+- Select the extension on a regular website. — 7
 - Browser-protected pages stay unchanged. — 4
 - Tune with live feedback — 4
 - Adjust type, size, spacing, line length, surface, and the optional moving focus band. — 13
