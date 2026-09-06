@@ -11,7 +11,7 @@ static product now matches the release build at
 - Deployed implementation: `023fa64e7ef7bc4a079c7ed9e6c22409495f0757`
   (`7f6e186e113397d220ad93c4406509680a2fc9fe` contains the functional repair;
   `023fa64` adds a space in the visible/accessibility headline text).
-- Documentation handoff: recorded in the commit that updates this file.
+- Documentation handoff: `d56f4a4938e32bfdcd362c9ed22f420a729deee0`.
 - Public MV3 ZIP: 28,210 bytes, SHA-256
   `0858641aa9c8e196c129c3980163b8d7a60c2f52463ba4032927fa2912961a93`.
   `npm run test:live` byte-matched it with `dist/site` after deployment.
