@@ -197,6 +197,26 @@ try {
     throw new Error(`Profile did not apply its keyboard-selected bounds: ${JSON.stringify(applied)}`);
   }
 
+  if (runsClaim(livePagePreviewClaim)) {
+    await popup.locator('#new-profile').click();
+    await popup.waitForFunction(() => document.querySelectorAll('#profile-select option').length === 2);
+    await popup.locator('#font-size').focus();
+    await popup.keyboard.press('Home');
+    await article.waitForFunction(() => getComputedStyle(document.querySelector('#article-copy')).fontSize === '14px');
+    await article.waitForTimeout(350);
+    const replacementPreview = await popup.evaluate(async () => {
+      const state = (await chrome.storage.local.get('eyeComfortState')).eyeComfortState;
+      const selected = (document.querySelector('#profile-select')).value;
+      return { selected, assigned: state?.assignments?.['127.0.0.1'] };
+    });
+    if (!replacementPreview.assigned || replacementPreview.selected === replacementPreview.assigned) {
+      throw new Error(`The second profile was unexpectedly saved before its preview: ${JSON.stringify(replacementPreview)}`);
+    }
+    await popup.locator('#assign').click();
+    await popup.waitForFunction(() => document.querySelector('#assign')?.textContent === 'Saved to this website');
+    livePagePreview = '32px preview remained visible before first assignment; 14px replacement-profile preview also stayed visible before reassignment';
+  }
+
   let freeReadingControls = 'not selected';
   const checkEveryFontStyle = runsClaim(freeReadingControlsClaim) || runsClaim(fourFontStylesClaim);
   if (checkEveryFontStyle) {
@@ -315,7 +335,8 @@ try {
     for await (const chunk of backupStream) chunks.push(chunk);
     const backupText = Buffer.concat(chunks).toString('utf8');
     const backup = JSON.parse(backupText);
-    if (backup.assignments?.['127.0.0.1'] === undefined || backup.profiles?.[0]?.settings?.fontSize !== 32) {
+    const assignedProfile = backup.profiles?.find((profile) => profile.id === backup.assignments?.['127.0.0.1']);
+    if (!assignedProfile || assignedProfile.settings?.fontSize !== 32) {
       throw new Error(`Exported backup did not contain the unlicensed saved profile: ${backupText}`);
     }
 
@@ -326,9 +347,11 @@ try {
     });
     await popup.waitForFunction(() => document.querySelector('#notice')?.textContent === 'Backup imported. Existing profiles were replaced.');
     const restoredState = await popup.evaluate(async () => (await chrome.storage.local.get('eyeComfortState')).eyeComfortState);
-    if (restoredState?.assignments?.['127.0.0.1'] === undefined || restoredState?.profiles?.[0]?.settings?.fontSize !== 32) {
+    const restoredProfile = restoredState?.profiles?.find((profile) => profile.id === restoredState.assignments?.['127.0.0.1']);
+    if (!restoredProfile || restoredProfile.settings?.fontSize !== 32) {
       throw new Error(`Imported backup did not restore the unlicensed profile: ${JSON.stringify(restoredState)}`);
     }
+    await popup.locator('#profile-select').selectOption(restoredProfile.id);
     if (applied.paragraphFontSize !== '32px') {
       throw new Error(`Unlicensed reading controls did not change the article: ${JSON.stringify(applied)}`);
     }
@@ -447,7 +470,8 @@ try {
   if (runsClaim(localProfilePrivacyClaim)) {
     const storedState = await popup.evaluate(async () => (await chrome.storage.local.get('eyeComfortState')).eyeComfortState);
     const expectedStoredSize = runsClaim(offlineProfileClaim) ? 31 : 32;
-    if (storedState?.assignments?.['127.0.0.1'] === undefined || storedState?.profiles?.[0]?.settings?.fontSize !== expectedStoredSize) {
+    const assignedProfile = storedState?.profiles?.find((profile) => profile.id === storedState.assignments?.['127.0.0.1']);
+    if (!assignedProfile || assignedProfile.settings?.fontSize !== expectedStoredSize) {
       throw new Error(`The saved profile was not retained in browser extension storage: ${JSON.stringify(storedState)}`);
     }
   }

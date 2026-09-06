@@ -122,12 +122,11 @@ async function applyAssigned(): Promise<void> {
   const state = normalizeState(stored[STORAGE_KEY]);
   const profileId = state.assignments[location.hostname];
   const profile = state.profiles.find(({ id }) => id === profileId);
-  if (profile) {
-    previewSettings = null;
-    apply(profile.settings);
-    return;
-  }
-  apply(previewSettings);
+  // A stored assignment is the normal page state. Once the popup has sent a
+  // temporary preview, however, every related storage update must leave that
+  // preview visible—even if this website was previously assigned to another
+  // profile—until the reader clears it or reloads the page.
+  apply(previewSettings ?? profile?.settings ?? null);
 }
 
 function captureCheckoutLicense(): void {
