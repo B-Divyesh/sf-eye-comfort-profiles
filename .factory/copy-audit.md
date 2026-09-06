@@ -1,6 +1,6 @@
 # Landing-page copy audit
 
-Audited source: `site/index.html` and `README.md` on 2026-09-05. Counts treat hyphenated
+Audited source: `site/index.html` and `README.md` on 2026-09-06. Counts treat hyphenated
 terms, URLs, version numbers, and numeric readouts as one word. Symbols used
 only as artwork are excluded. No sentence exceeds 22 words. No banned word is
 present; “unlock” is used only for the literal paid license.
