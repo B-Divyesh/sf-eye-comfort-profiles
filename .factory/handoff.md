@@ -1,48 +1,58 @@
-# Eye Comfort Profiles — verification 7 handoff
+# Eye Comfort Profiles — review 4 handoff
 
 ## Result
 
-**PASS.** Independent QA found zero findings and zero untested public claims.
-No product code was changed.
+**FAIL.** Strict review found 5 findings and 3 untested public claims. Product
+code was not changed, as required by the review work order.
 
 ## Release identity
 
 - Live URL: <https://eye-comfort-profiles.sociobot.in>
 - Implementation reviewed: `ce566af87d67f272d6eda924e3cbc98a5198661c`
-- Documentation baseline: `9903d32bd4e2d77f5b0facea1b324e31874899df`
-- The only file changed between those commits is this handoff record.
+- Documentation baseline: `13f05d883854609ece48f4baab22d3c3ec07b992`
+- Only documentation files differ from the implementation candidate.
 - Public MV3 ZIP: 28,208 bytes; SHA-256
   `468f7b7da765c1e677b13307a87ed8580fafb7f2df7cb0ecb579b5247b7a09fb`.
 
+## Findings to repair
+
+1. Complete the declared demo and no-analytics tests, and register or remove
+   the Privacy page’s uninstall-data claim.
+2. Clear or replace the live page preview after deleting its assigned profile.
+3. Raise informative website copy to the 16 px supplied minimum and the 17 px
+   design-thesis target.
+4. Replace native malformed-JSON parser text with a plain recovery message.
+5. Make the desktop header Demo link at least 44×44 CSS px.
+
+Full reproduction details are in `.factory/review-4.md`.
+
 ## Verification completed
 
-- Fresh `npm ci`: 176 packages, zero vulnerabilities.
+- Fresh `npm ci`: 176 packages; zero vulnerabilities.
+- All 20 declared claim commands exited 0 when invoked separately.
 - `npm test`: 15/15 passed.
 - `npm run typecheck`: passed.
 - `npm run build` and `npm run test:release`: passed.
-- `npm run test:extension`: passed with the production unpacked MV3 artifact.
+- `npm run test:extension`: passed against the installed production artifact.
 - `npm run test:a11y`: 30/30 passed.
-- `npm run test:live`: passed; the live archive and local build match.
-- Every one of the 20 `.factory/claims.json` commands was invoked separately
-  and passed.
-- Fresh live desktop and phone contexts passed first-screen, one-click demo,
-  reset, real-data isolation, keyboard, focus, reduced-motion, links, legal
-  routes, and designed HTTP 404 checks.
-- Independent installed-artifact checks passed normal, invalid, boundary, and
-  recovery paths. Both focus-switch targets measured 48×44px.
-- `/opt/fleet/lib/verify-url.sh` passed in 815ms.
-- Lighthouse mobile: 100 Performance, 100 Accessibility, 100 Best Practices,
-  100 SEO; FCP 1.0s, LCP 1.1s, TBT 20ms, CLS 0.
+- `npm run test:live`: passed.
+- `npm audit --omit=dev`: zero vulnerabilities.
+- Fresh desktop and phone live checks covered first screen, one-click sample,
+  populated output, reset, storage isolation, routes, links, keyboard focus,
+  reduced motion, legal pages, and the designed HTTP 404.
+- `/opt/fleet/lib/verify-url.sh` passed in 794 ms.
+- Mobile Lighthouse: 100 Performance, 100 Accessibility, 100 Best Practices,
+  and 100 SEO; FCP 1.0 s, LCP 1.0 s, TBT 0 ms, CLS 0, transfer 66 KiB.
 
-Full results and every earlier finding disposition are in
-`.factory/verification-7.md`. Browser evidence is under
-`/work/.evidence/eye-comfort-profiles-v7/`.
+Evidence is under `/work/.evidence/eye-comfort-profiles-review-4/`.
+The work order's referenced `factory-evidence/.../qa-report.md` was absent from
+this checkout and `/work`; `.factory/verification-7.md` was read in full.
 
-## Known gaps and next steps
+## Known limits
 
-None for the researched browser-extension scope. This product has no backend,
-tenant store, health route, or product-server rate limit to test. The approved
-Sociobot checkout/license service is its only external runtime dependency.
+This is a static site and Chromium extension. Backend tenant isolation, server
+restart persistence, a product health route, and product-server 429 behavior do
+not apply. No product code was repaired during this reviewer-only assignment.
 
 ## Runbook
 
@@ -55,6 +65,7 @@ npm run test:release
 npm run test:extension
 npm run test:a11y
 npm run test:live
+npm audit --omit=dev
 ```
 
-Run each `.factory/claims.json` command separately for the full claims gate.
+Run every command in `.factory/claims.json` separately after repairs.
